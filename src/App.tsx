@@ -66,6 +66,13 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
         <div className="p-6">
           <div className="flex items-start gap-4 mb-4">
             {/* Logo */}
+          </div>
+        </div>
+      </div>
+    );
+  };
+};
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Trophy, Settings, UserPlus, Bell } from 'lucide-react';
 import { useAuth } from './hooks/useAuth';
