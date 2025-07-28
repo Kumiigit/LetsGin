@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Users, Globe, Lock, ArrowRight, MessageSquare, LogOut, Image } from 'lucide-react';
 import { useSpaceAssets } from "./hooks/useSpaceAssets";
 
-interface SpaceSelectorProps {
+interface AppProps {
   spaces: SpaceWithStats[];
   userSpaces: Space[];
   joinRequests: JoinRequest[];
@@ -14,7 +14,7 @@ interface SpaceSelectorProps {
   onSignOut: () => void;
 }
 
-const SpaceSelector: React.FC<SpaceSelectorProps> = ({
+const App: React.FC<AppProps> = ({
   spaces,
   userSpaces,
   joinRequests,
