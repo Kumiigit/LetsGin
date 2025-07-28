@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, Calendar, Clock, Users, MessageSquare } from 'lucide-react';
+import { Plus, Calendar, Clock, Users, MessageSquare, Settings } from 'lucide-react';
 import { StreamWithDetails, Staff } from '../types';
 import { StreamCard } from './StreamCard';
 import { CreateStreamForm } from './CreateStreamForm';
+import { DiscordIntegrationModal } from './DiscordIntegrationModal';
+import { useSpaces } from '../hooks/useSpaces';
+import { useAuth } from '../hooks/useAuth';
 
 interface StreamsViewProps {
   streams: StreamWithDetails[];
@@ -32,6 +35,9 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
   isSpaceOwner = false,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showDiscordModal, setShowDiscordModal] = useState(false);
+  const { user } = useAuth();
+  const { currentSpace } = useSpaces(user?.id);
 
   // Helper function to create a full datetime from date and time strings
   const createDateTime = (dateStr: string, timeStr: string): Date => {
@@ -50,21 +56,33 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+      <div className="professional-card rounded-xl shadow-2xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-purple-400" />
             <h2 className="text-xl font-semibold text-white">Stream Schedule</h2>
           </div>
-          {isSpaceOwner && (
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Schedule Stream
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {isSpaceOwner && (
+              <>
+                <button
+                  onClick={() => setShowDiscordModal(true)}
+                  className="professional-button flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                  title="Discord Integration"
+                >
+                  <Settings className="w-4 h-4" />
+                  Discord
+                </button>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="professional-button flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Schedule Stream
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -96,7 +114,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
       )}
 
       {upcomingStreams.length > 0 && (
-        <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+        <div className="professional-card rounded-xl shadow-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Upcoming Streams</h3>
           <div className="space-y-4">
             {upcomingStreams.map(stream => (
@@ -115,7 +133,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
       )}
 
       {pastStreams.length > 0 && (
-        <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+        <div className="professional-card rounded-xl shadow-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Past Streams</h3>
           <div className="space-y-4">
             {pastStreams.slice(0, 5).map(stream => (
@@ -139,6 +157,14 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
           <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-500" />
           <p>No streams scheduled yet. Click "Schedule Stream" to get started.</p>
         </div>
+      )}
+
+      {/* Discord Integration Modal */}
+      {showDiscordModal && currentSpace && (
+        <DiscordIntegrationModal
+          space={currentSpace}
+          onClose={() => setShowDiscordModal(false)}
+        />
       )}
     </div>
   );

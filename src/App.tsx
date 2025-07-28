@@ -18,8 +18,9 @@ import { JoinRequestsModal } from './components/JoinRequestsModal';
 import { SpaceSettingsModal } from './components/SpaceSettingsModal';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
+import { SpaceBrandingModal } from './components/SpaceBrandingModal';
 import { formatDate, getWeekDates } from './utils/dateUtils';
-import { Settings, UserPlus, LogOut, Bell } from 'lucide-react';
+import { Settings, UserPlus, LogOut, Bell, Image } from 'lucide-react';
 import { Staff, TimeSlot } from './types';
 
 export default function App() {
@@ -97,6 +98,7 @@ export default function App() {
   } | null>(null);
   const [showJoinRequestsModal, setShowJoinRequestsModal] = useState(false);
   const [showSpaceSettingsModal, setShowSpaceSettingsModal] = useState(false);
+  const [showSpaceBrandingModal, setShowSpaceBrandingModal] = useState(false);
 
   // Derived state
   const weekDates = getWeekDates(currentWeekStart);
@@ -283,10 +285,10 @@ export default function App() {
   };
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-300">Loading...</p>
+          <p className="text-white">Loading...</p>
         </div>
       </div>
     );
@@ -321,8 +323,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <header className="bg-gray-900/95 backdrop-blur-sm shadow-xl border-b border-gray-700">
+    <div className="min-h-screen">
+      <header className="glass-effect shadow-2xl border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
@@ -337,6 +339,15 @@ export default function App() {
               </button>
             </div>
             <div className="flex items-center space-x-4">
+              {isSpaceOwner && (
+                <button
+                  onClick={() => setShowSpaceBrandingModal(true)}
+                  className="p-2 text-gray-300 hover:text-white transition-colors"
+                  title="Space Branding"
+                >
+                  <Image className="w-5 h-5" />
+                </button>
+              )}
               {isSpaceOwner && (
                 <button
                   onClick={() => setShowJoinRequestsModal(true)}
@@ -365,7 +376,7 @@ export default function App() {
               </span>
               <button
                 onClick={signOut}
-                className="flex items-center gap-2 px-3 py-1 text-sm text-gray-300 hover:text-white transition-colors"
+                className="professional-button flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
@@ -514,6 +525,13 @@ export default function App() {
             space={currentSpace}
             onUpdateSpace={handleUpdateSpace}
             onClose={() => setShowSpaceSettingsModal(false)}
+          />
+        )}
+
+        {showSpaceBrandingModal && currentSpace && (
+          <SpaceBrandingModal
+            space={currentSpace}
+            onClose={() => setShowSpaceBrandingModal(false)}
           />
         )}
       </main>

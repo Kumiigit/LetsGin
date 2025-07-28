@@ -32,11 +32,11 @@ export const WeekNavigator: React.FC<WeekNavigatorProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-4">
+    <div className="flex items-center justify-between professional-card rounded-xl shadow-2xl p-4">
       <div className="flex items-center gap-4">
         <button
           onClick={onToday}
-          className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="professional-button flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           <Calendar className="w-4 h-4" />
           Today
@@ -44,7 +44,7 @@ export const WeekNavigator: React.FC<WeekNavigatorProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onPreviousWeek}
-            className="p-2 text-gray-300 hover:bg-gray-700 rounded-md transition-colors"
+            className="professional-button p-2 text-gray-300 rounded-md transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -53,7 +53,7 @@ export const WeekNavigator: React.FC<WeekNavigatorProps> = ({
           </h2>
           <button
             onClick={onNextWeek}
-            className="p-2 text-gray-300 hover:bg-gray-700 rounded-md transition-colors"
+            className="professional-button p-2 text-gray-300 rounded-md transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

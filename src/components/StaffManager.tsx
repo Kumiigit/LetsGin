@@ -40,7 +40,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
   };
 
   return (
-    <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+    <div className="professional-card rounded-xl shadow-2xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-blue-400" />
@@ -50,7 +50,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="professional-button flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add {activeRole === 'caster' ? 'Caster' : 'Observer'}
@@ -58,14 +58,14 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
       </div>
 
       {showAddForm && (
-        <form onSubmit={handleSubmit} className="bg-gray-700/50 backdrop-blur-sm rounded-lg p-4 mb-6">
+        <form onSubmit={handleSubmit} className="professional-card rounded-lg p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
               placeholder="Full Name"
               value={newStaff.name}
               onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
-              className="px-3 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="professional-input px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <input
@@ -73,7 +73,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
               placeholder="Email Address"
               value={newStaff.email}
               onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
-              className="px-3 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="professional-input px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <div className="px-3 py-2 border border-gray-600 rounded-md bg-gray-800">
@@ -83,14 +83,14 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
           <div className="flex gap-2 mt-4">
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              className="professional-button px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               Add {activeRole === 'caster' ? 'Caster' : 'Observer'}
             </button>
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+              className="professional-button px-4 py-2 rounded-md transition-colors"
             >
               Cancel
             </button>
@@ -105,7 +105,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
             className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
               selectedStaffId === member.id
                 ? 'border-blue-500 bg-blue-900/30'
-                : 'border-gray-600 bg-gray-800/50 hover:border-gray-500'
+                : 'border-gray-800 professional-card hover:border-gray-600'
             }`}
             onClick={() => onSelectStaff(member.id)}
           >

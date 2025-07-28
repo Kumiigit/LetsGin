@@ -115,3 +115,42 @@ export interface JoinRequestWithUser extends JoinRequest {
   userName: string;
   userEmail: string;
 }
+
+export interface DiscordWebhook {
+  id: string;
+  spaceId: string;
+  webhookUrl: string;
+  webhookName?: string;
+  isActive: boolean;
+  autoPostStreams: boolean;
+  postTiming: 'on_creation' | 'before_stream' | 'both';
+  minutesBefore: number;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StreamDiscordPost {
+  id: string;
+  streamId: string;
+  webhookId: string;
+  discordMessageId?: string;
+  postType: 'creation' | 'reminder';
+  postedAt: string;
+  success: boolean;
+  errorMessage?: string;
+  createdAt: string;
+}
+
+export interface SpaceAsset {
+  id: string;
+  spaceId: string;
+  assetType: 'logo' | 'banner';
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  mimeType: string;
+  uploadedBy: string;
+  createdAt: string;
+  updatedAt: string;
+}

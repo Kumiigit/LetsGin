@@ -74,8 +74,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   };
 
   return (
-    <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700">
-      <div className="p-6 border-b border-gray-700">
+    <div className="professional-card rounded-xl shadow-2xl">
+      <div className="p-6 border-b border-gray-800">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-blue-400" />
           <h2 className="text-xl font-semibold text-white">Weekly Availability</h2>
@@ -102,8 +102,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-700/50">
-              <th className="sticky left-0 bg-gray-700/50 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-600">
+            <tr className="bg-gray-900/50">
+              <th className="sticky left-0 bg-gray-900/50 px-4 py-3 text-left text-sm font-medium text-gray-300 border-r border-gray-800">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
                   Time
@@ -121,8 +121,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           </thead>
           <tbody>
             {timeSlots.map((time) => (
-              <tr key={time} className="border-b border-gray-700">
-                <td className="sticky left-0 bg-gray-800/90 px-4 py-2 text-sm text-gray-300 border-r border-gray-600 font-medium">
+              <tr key={time} className="border-b border-gray-800">
+                <td className="sticky left-0 bg-black/90 px-4 py-2 text-sm text-gray-300 border-r border-gray-800 font-medium">
                   {formatTime(time)}
                 </td>
                 {weekDates.map((date) => (

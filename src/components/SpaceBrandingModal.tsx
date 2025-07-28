@@ -62,8 +62,8 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-black border border-gray-800 rounded-lg shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <div className="professional-card rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <Image className="w-6 h-6 text-blue-400" />
@@ -97,7 +97,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Logo Preview */}
               <div className="space-y-4">
-                <div className="aspect-square bg-gray-900 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                <div className="aspect-square professional-card border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
                   {logoAsset ? (
                     <img
                       src={getAssetUrl(logoAsset)}
@@ -113,7 +113,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
                 </div>
 
                 {logoAsset && (
-                  <div className="bg-gray-900 rounded-lg p-4 space-y-2">
+                  <div className="professional-card rounded-lg p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-white">Current Logo</span>
                       <button
@@ -138,7 +138,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
                 <button
                   onClick={() => logoInputRef.current?.click()}
                   disabled={uploading === 'logo'}
-                  className="w-full p-6 border-2 border-dashed border-gray-700 rounded-lg hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="professional-button w-full p-6 border-2 border-dashed border-gray-700 rounded-lg hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div className="text-center">
                     {uploading === 'logo' ? (
@@ -189,7 +189,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
 
             <div className="space-y-4">
               {/* Banner Preview */}
-              <div className="aspect-[3/1] bg-gray-900 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+              <div className="aspect-[3/1] professional-card border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
                 {bannerAsset ? (
                   <img
                     src={getAssetUrl(bannerAsset)}
@@ -210,7 +210,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
                   <button
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploading === 'banner'}
-                    className="w-full p-6 border-2 border-dashed border-gray-700 rounded-lg hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="professional-button w-full p-6 border-2 border-dashed border-gray-700 rounded-lg hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="text-center">
                       {uploading === 'banner' ? (
@@ -250,7 +250,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
 
                 {/* Banner Info */}
                 {bannerAsset && (
-                  <div className="bg-gray-900 rounded-lg p-4 space-y-2">
+                  <div className="professional-card rounded-lg p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-white">Current Banner</span>
                       <button
@@ -276,7 +276,7 @@ export const SpaceBrandingModal: React.FC<SpaceBrandingModalProps> = ({
         <div className="flex justify-end gap-3 p-6 border-t border-gray-800">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+            className="professional-button px-6 py-2 rounded-lg transition-colors"
           >
             Close
           </button>

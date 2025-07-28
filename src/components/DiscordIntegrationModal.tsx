@@ -109,8 +109,8 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-black border border-gray-800 rounded-lg shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <div className="professional-card rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
@@ -143,7 +143,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
           )}
 
           {/* Setup Instructions */}
-          <div className="bg-gray-900 rounded-lg p-6 mb-6">
+          <div className="professional-card rounded-lg p-6 mb-6">
             <h4 className="text-lg font-medium text-white mb-4">Setup Instructions</h4>
             <div className="space-y-3 text-sm text-gray-300">
               <div className="flex items-start gap-3">
@@ -185,7 +185,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
               <h4 className="text-lg font-medium text-white mb-4">Configured Webhooks</h4>
               <div className="space-y-4">
                 {webhooks.map((webhook) => (
-                  <div key={webhook.id} className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                  <div key={webhook.id} className="professional-card rounded-lg p-4 border border-gray-800">
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <h5 className="font-medium text-white">
@@ -231,7 +231,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                       <button
                         onClick={() => handleTest(webhook.webhookUrl, webhook.id)}
                         disabled={testingWebhook === webhook.id}
-                        className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        className="professional-button flex items-center gap-2 px-3 py-1 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                       >
                         {testingWebhook === webhook.id ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -242,7 +242,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                       </button>
                       <button
                         onClick={() => handleEdit(webhook)}
-                        className="flex items-center gap-2 px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors text-sm"
+                        className="professional-button flex items-center gap-2 px-3 py-1 rounded transition-colors text-sm"
                       >
                         <Settings className="w-4 h-4" />
                         Edit
@@ -265,13 +265,13 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
           {!showCreateForm ? (
             <button
               onClick={() => setShowCreateForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="professional-button flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Discord Webhook
             </button>
           ) : (
-            <form onSubmit={handleSubmit} className="bg-gray-900 rounded-lg p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="professional-card rounded-lg p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <h4 className="text-lg font-medium text-white">
                   {editingWebhook ? 'Edit Webhook' : 'Add New Webhook'}
@@ -296,7 +296,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                       value={formData.webhookUrl}
                       onChange={(e) => setFormData({ ...formData, webhookUrl: e.target.value })}
                       placeholder="https://discord.com/api/webhooks/..."
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="professional-input w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                       disabled={!!editingWebhook}
                     />
@@ -316,7 +316,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                       value={formData.webhookName}
                       onChange={(e) => setFormData({ ...formData, webhookName: e.target.value })}
                       placeholder="e.g., Stream Announcements"
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="professional-input w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                     <select
                       value={formData.postTiming}
                       onChange={(e) => setFormData({ ...formData, postTiming: e.target.value as any })}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="professional-input w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="on_creation">When stream is created</option>
                       <option value="before_stream">Before stream starts</option>
@@ -348,7 +348,7 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                         onChange={(e) => setFormData({ ...formData, minutesBefore: parseInt(e.target.value) || 60 })}
                         min="1"
                         max="1440"
-                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="professional-input w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   )}
@@ -373,14 +373,14 @@ export const DiscordIntegrationModal: React.FC<DiscordIntegrationModalProps> = (
                 <button
                   type="submit"
                   disabled={!formData.webhookUrl || !validateWebhookUrl(formData.webhookUrl)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  className="professional-button flex-1 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {editingWebhook ? 'Update Webhook' : 'Add Webhook'}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                  className="professional-button px-4 py-2 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>

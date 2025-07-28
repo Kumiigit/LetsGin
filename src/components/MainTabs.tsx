@@ -13,13 +13,13 @@ export const MainTabs: React.FC<MainTabsProps> = ({
   isSpaceOwner = false,
 }) => {
   return (
-    <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-1 inline-flex mb-6">
+    <div className="professional-card rounded-xl shadow-2xl p-1 inline-flex mb-6">
       <button
         onClick={() => onTabChange('availability')}
-        className={`flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
+        className={`professional-button flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
           activeTab === 'availability'
             ? 'bg-blue-600 text-white shadow-lg'
-            : 'text-gray-300 hover:text-white hover:bg-gray-700'
+            : 'text-gray-300 hover:text-white'
         }`}
       >
         <Calendar className="w-5 h-5" />
@@ -27,10 +27,10 @@ export const MainTabs: React.FC<MainTabsProps> = ({
       </button>
       <button
         onClick={() => onTabChange('streams')}
-        className={`flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
+        className={`professional-button flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
           activeTab === 'streams'
             ? 'bg-purple-600 text-white shadow-lg'
-            : 'text-gray-300 hover:text-white hover:bg-gray-700'
+            : 'text-gray-300 hover:text-white'
         }`}
       >
         <Video className="w-5 h-5" />
@@ -38,10 +38,10 @@ export const MainTabs: React.FC<MainTabsProps> = ({
       </button>
       <button
         onClick={() => onTabChange('credits')}
-        className={`flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
+        className={`professional-button flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
           activeTab === 'credits'
             ? 'bg-yellow-600 text-white shadow-lg'
-            : 'text-gray-300 hover:text-white hover:bg-gray-700'
+            : 'text-gray-300 hover:text-white'
         }`}
       >
         <Trophy className="w-5 h-5" />
@@ -50,10 +50,10 @@ export const MainTabs: React.FC<MainTabsProps> = ({
       {isSpaceOwner && (
         <button
           onClick={() => onTabChange('members')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
+          className={`professional-button flex items-center gap-2 px-6 py-3 rounded-md transition-colors ${
             activeTab === 'members'
               ? 'bg-green-600 text-white shadow-lg'
-              : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              : 'text-gray-300 hover:text-white'
           }`}
         >
           <Users className="w-5 h-5" />
