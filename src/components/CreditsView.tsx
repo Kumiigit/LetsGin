@@ -86,7 +86,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+      <div className="professional-card rounded-xl shadow-2xl p-6">
         <div className="flex items-center gap-2 mb-6">
           <Trophy className="w-5 h-5 text-yellow-500" />
           <h2 className="text-xl font-semibold text-white">Credits System</h2>
@@ -117,7 +117,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
       {/* Leaderboards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Caster Leaderboard */}
-        <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+        <div className="professional-card rounded-xl shadow-2xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-blue-400" />
             <h3 className="text-lg font-semibold text-white">Caster Leaderboard</h3>
@@ -125,7 +125,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
           
           <div className="space-y-3">
             {casterLeaderboard.map((caster, index) => (
-              <div key={caster.id} className="flex items-center justify-between p-3 bg-gray-700/50 backdrop-blur-sm rounded-lg">
+              <div key={caster.id} className="flex items-center justify-between p-3 professional-card rounded-lg">
                 <div className="flex items-center gap-3">
                   {getRankIcon(index)}
                   <div>
@@ -154,7 +154,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
         </div>
 
         {/* Observer Leaderboard */}
-        <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+        <div className="professional-card rounded-xl shadow-2xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-purple-400" />
             <h3 className="text-lg font-semibold text-white">Observer Leaderboard</h3>
@@ -162,7 +162,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
           
           <div className="space-y-3">
             {observerLeaderboard.map((observer, index) => (
-              <div key={observer.id} className="flex items-center justify-between p-3 bg-gray-700/50 backdrop-blur-sm rounded-lg">
+              <div key={observer.id} className="flex items-center justify-between p-3 professional-card rounded-lg">
                 <div className="flex items-center gap-3">
                   {getRankIcon(index)}
                   <div>
@@ -192,7 +192,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+      <div className="professional-card rounded-xl shadow-2xl p-6">
         <div className="flex items-center gap-2 mb-4">
           <History className="w-5 h-5 text-gray-400" />
           <h3 className="text-lg font-semibold text-white">Recent Transactions</h3>
@@ -201,7 +201,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-600">
+              <tr className="border-b border-gray-800">
                 <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Staff Member</th>
                 <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Amount</th>
                 <th className="text-left py-2 px-3 text-sm font-medium text-gray-300">Reason</th>
@@ -212,7 +212,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
               {recentTransactions.map((transaction) => {
                 const staffMember = getStaffById(transaction.staffId);
                 return (
-                  <tr key={transaction.id} className="border-b border-gray-700">
+                  <tr key={transaction.id} className="border-b border-gray-800">
                     <td className="py-2 px-3">
                       <div className="font-medium text-white">{staffMember?.name}</div>
                       <div className="text-sm text-gray-300 capitalize">({staffMember?.role})</div>
@@ -246,7 +246,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
       {/* Adjust Credits Modal */}
       {showAdjustForm && isSpaceOwner && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 border border-gray-700">
+          <div className="professional-card rounded-xl shadow-2xl w-full max-w-md mx-4">
             <div className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-5 h-5 text-blue-400" />
@@ -258,7 +258,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Staff Member
                   </label>
-                  <div className="p-3 bg-gray-700 rounded-md">
+                  <div className="p-3 professional-card rounded-md">
                     <div className="font-medium text-white">
                       {getStaffById(showAdjustForm)?.name}
                     </div>
@@ -301,7 +301,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                       type="number"
                       value={adjustAmount}
                       onChange={(e) => setAdjustAmount(parseInt(e.target.value) || 0)}
-                      className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="professional-input flex-1 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Custom amount"
                     />
                   </div>
@@ -316,7 +316,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                     value={adjustReason}
                     onChange={(e) => setAdjustReason(e.target.value)}
                     placeholder="e.g., Manual adjustment, Bonus, Penalty"
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -325,7 +325,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                 <button
                   onClick={() => handleAdjustSubmit(showAdjustForm)}
                   disabled={adjustAmount === 0 || !adjustReason.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="professional-button flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Apply Adjustment
                 </button>
@@ -335,7 +335,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                     setAdjustAmount(0);
                     setAdjustReason('');
                   }}
-                  className="px-4 py-2 bg-gray-600 text-gray-300 rounded-md hover:bg-gray-500 transition-colors"
+                  className="professional-button px-4 py-2 rounded-md transition-colors"
                 >
                   Cancel
                 </button>
