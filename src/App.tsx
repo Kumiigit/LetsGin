@@ -50,7 +50,11 @@ const App: React.FC = () => {
       joinRequests={joinRequests || []}
       isAdmin={isAdmin}
       onCreateSpace={createSpace}
-      onSelectSpace={selectSpace}
+      onSelectSpace={(spaceId) => {
+        selectSpace(spaceId);
+        // Force a page reload to enter the space
+        window.location.reload();
+      }}
       onJoinSpace={joinSpace}
       loading={spacesLoading}
       onSignOut={signOut}

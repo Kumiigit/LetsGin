@@ -177,11 +177,10 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   const handleCreateSpace = (e: React.FormEvent) => {
     e.preventDefault();
     if (newSpace.name.trim() && newSpace.adminPassword.trim()) {
-      onCreateSpace?.({
+      onCreateSpace({
         name: newSpace.name.trim(),
         description: newSpace.description.trim() || undefined,
         isPublic: newSpace.isPublic,
-        adminPassword: newSpace.adminPassword.trim(),
       })
         .then(() => {
           setNewSpace({ name: '', description: '', isPublic: true, adminPassword: '' });
