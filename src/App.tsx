@@ -66,473 +66,266 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
         <div className="p-6">
           <div className="flex items-start gap-4 mb-4">
             {/* Logo */}
-            <div className="flex-shrink-0">
-              {logoAsset ? (
-                <img
-                  src={getAssetUrl(logoAsset)}
-                  alt={`${space.name} logo`}
-                  className="w-16 h-16 rounded-lg object-cover border-2 border-gray-700"
-                />
-              ) : (
-                <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center border-2 border-gray-600">
-                  <Users className="w-8 h-8 text-gray-400" />
-                </div>
-              )}
-            </div>
+import React, { useState, useEffect } from 'react';
+import { Calendar, Users, Trophy, Settings, UserPlus, Bell } from 'lucide-react';
+import { useAuth } from './hooks/useAuth';
+import { useSpaces } from './hooks/useSpaces';
+import { useSupabaseData } from './hooks/useSupabaseData';
+import { useStreamsData } from './hooks/useStreamsData';
+import { useCreditsData } from './hooks/useCreditsData';
+import { SpaceSelector } from './components/SpaceSelector';
+import { AvailabilityCalendar } from './components/AvailabilityCalendar';
+import { StreamsView } from './components/StreamsView';
+import { CreditsView } from './components/CreditsView';
+import { MembersView } from './components/MembersView';
+import { MainTabs } from './components/MainTabs';
+import { JoinRequestsModal } from './components/JoinRequestsModal';
+import { SpaceSettingsModal } from './components/SpaceSettingsModal';
+import { ErrorMessage } from './components/ErrorMessage';
+import { LoadingSpinner } from './components/LoadingSpinner';
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                {logoAsset ? (
-                  <img
-                    src={getAssetUrl(logoAsset)}
-                    alt={space.name}
-                    className="w-8 h-8 rounded object-cover"
-                  />
-                ) : null}
-                <h3 className="text-lg font-semibold text-white truncate">{space.name}</h3>
-              </div>
-              {space.description && (
-                <p className="text-gray-300 text-sm mb-3 line-clamp-2">{space.description}</p>
-              )}
-              <div className="text-sm text-gray-400">
-                Hosted by {space.ownerName}
-              </div>
-            </div>
+const App: React.FC = () => {
+  const { user, signOut, AuthComponent } = useAuth();
+  const { 
+    spaces, 
+    userSpaces, 
+    joinRequests, 
+    selectedSpaceId, 
+    isAdmin, 
+    loading: spacesLoading,
+    error: spacesError,
+    createSpace, 
+    selectSpace, 
+    joinSpace,
+    approveJoinRequest,
+    rejectJoinRequest
+  } = useSpaces();
+  
+  const [activeTab, setActiveTab] = useState('availability');
+  const [showJoinRequests, setShowJoinRequests] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-            {!showJoinButton && (
-              <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-            )}
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{space.memberCount} members</span>
-              </div>
-              <div className="flex items-center gap-1">
-                {space.isPublic ? (
-                  <Globe className="w-4 h-4 text-green-400" />
-                ) : (
-                  <Lock className="w-4 h-4 text-yellow-400" />
-                )}
-                <span>{space.isPublic ? 'Public' : 'Private'}</span>
-              </div>
-            </div>
+  // Get current space data
+  const currentSpace = selectedSpaceId ? spaces.find(s => s.id === selectedSpaceId) : null;
+  const isSpaceOwner = currentSpace?.ownerId === user?.id;
+  const pendingRequests = joinRequests.filter(r => r.spaceId === selectedSpaceId && r.status === 'pending');
 
-            {showJoinButton && (
-              <div className="flex gap-2">
-                {(() => {
-                  const requestStatus = getJoinRequestStatus(space.id);
-                  
-                  if (requestStatus === 'pending') {
-                    return (
-                      <div className="px-4 py-2 bg-yellow-600/20 border border-yellow-600 text-yellow-300 rounded-lg text-center text-sm">
-                        Request Pending
-                      </div>
-                    );
-                  }
-                  
-                  if (requestStatus === 'approved') {
-                    return (
-                      <button
-                        onClick={onClick}
-                        className="professional-button px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        Open Space
-                      </button>
-                    );
-                  }
-                  
-                  if (requestStatus === 'rejected') {
-                    return (
-                      <div className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-300 rounded-lg text-center text-sm">
-                        Request Denied (7 days)
-                      </div>
-                    );
-                  }
-                  
-                  return (
-                    <button
-                      onClick={() => setShowJoinForm(space.id)}
-                      className="professional-button px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-                    >
-                      Request to Join
-                    </button>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Initialize data hooks for selected space
+  const { 
+    staffMembers, 
+    availabilitySlots, 
+    loading: dataLoading,
+    error: dataError,
+    addStaffMember,
+    updateStaffMember,
+    deleteStaffMember,
+    addAvailabilitySlot,
+    updateAvailabilitySlot,
+    deleteAvailabilitySlot
+  } = useSupabaseData(selectedSpaceId);
 
-  const handleCreateSpace = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newSpace.name.trim() && newSpace.adminPassword.trim()) {
-      onCreateSpace({
-        name: newSpace.name.trim(),
-        description: newSpace.description.trim() || undefined,
-        isPublic: newSpace.isPublic,
-        adminPassword: newSpace.adminPassword.trim(),
-      })
-        .then(() => {
-          setNewSpace({ name: '', description: '', isPublic: true, adminPassword: '' });
-          setShowCreateForm(false);
-        })
-        .catch((error) => {
-          console.error('Failed to create space:', error);
-          alert(`Failed to create space: ${error.message}`);
-        });
+  const {
+    streams,
+    streamAssignments,
+    streamRsvps,
+    loading: streamsLoading,
+    error: streamsError,
+    createStream,
+    updateStream,
+    deleteStream,
+    assignStaffToStream,
+    updateStreamRsvp
+  } = useStreamsData(selectedSpaceId);
+
+  const {
+    staffCredits,
+    creditTransactions,
+    loading: creditsLoading,
+    error: creditsError,
+    addCreditTransaction
+  } = useCreditsData(selectedSpaceId);
+
+  // Handle errors
+  useEffect(() => {
+    const errors = [spacesError, dataError, streamsError, creditsError].filter(Boolean);
+    if (errors.length > 0) {
+      setError(errors[0]);
+    } else {
+      setError(null);
     }
-  };
+  }, [spacesError, dataError, streamsError, creditsError]);
 
-  const handleJoinSpace = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (showJoinForm) {
-      onJoinSpace(showJoinForm, joinMessage.trim() || undefined);
-      setJoinMessage('');
-      setShowJoinForm(null);
-    }
-  };
+  // Show authentication if not logged in
+  if (!user) {
+    return <AuthComponent />;
+  }
 
-  const hasJoinRequest = (spaceId: string) => {
-    return joinRequests.some(request => request.spaceId === spaceId && request.status === 'pending');
-  };
-
-  const getJoinRequestStatus = (spaceId: string) => {
-    const request = joinRequests.find(request => request.spaceId === spaceId);
-    if (!request) return null;
-    
-    // Check if rejection is within 7 days
-    if (request.status === 'rejected') {
-      const rejectionDate = new Date(request.updatedAt);
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      if (rejectionDate > sevenDaysAgo) {
-        return 'rejected';
-      }
-    }
-    
-    return request.status;
-  };
-
-  const isMember = (spaceId: string) => {
-    return userSpaces.some(space => space.id === spaceId);
-  };
-
-  if (loading) {
+  // Show space selector if no space selected
+  if (!selectedSpaceId) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-300">Loading spaces...</p>
-        </div>
+      <SpaceSelector
+        spaces={spaces}
+        userSpaces={userSpaces}
+        joinRequests={joinRequests}
+        isAdmin={isAdmin}
+        onCreateSpace={createSpace}
+        onSelectSpace={selectSpace}
+        onJoinSpace={joinSpace}
+        loading={spacesLoading}
+        onSignOut={signOut}
+      />
+    );
+  }
+
+  // Show loading state
+  if (spacesLoading || dataLoading) {
+    return <LoadingSpinner message="Loading space data..." />;
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <ErrorMessage 
+          message={error} 
+          onRetry={() => window.location.reload()} 
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header */}
       <header className="glass-effect shadow-2xl border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Users className="w-8 h-8 text-blue-400" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => selectSpace(null)}
+                className="professional-button flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white transition-colors"
+              >
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Switch Space</span>
+              </button>
+              <div className="h-6 w-px bg-gray-600" />
               <div>
-                <h1 className="text-2xl font-bold text-white">
-                  {isAdmin ? 'Your Spaces' : 'Available Spaces'}
-                </h1>
-                <p className="text-gray-300">
-                  {isAdmin ? 'Create and manage your spaces' : 'Browse and join spaces'}
+                <h1 className="text-xl font-bold text-white">{currentSpace?.name}</h1>
+                <p className="text-sm text-gray-400">
+                  {isSpaceOwner ? 'Owner' : 'Member'} • {staffMembers.length} staff members
                 </p>
               </div>
             </div>
-            {isAdmin && (
+
+            <div className="flex items-center gap-2">
+              {isSpaceOwner && pendingRequests.length > 0 && (
+                <button
+                  onClick={() => setShowJoinRequests(true)}
+                  className="professional-button relative flex items-center gap-2 px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+                >
+                  <Bell className="w-4 h-4" />
+                  <span className="hidden sm:inline">Requests</span>
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {pendingRequests.length}
+                  </span>
+                </button>
+              )}
+              
+              {isSpaceOwner && (
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="professional-button flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Settings</span>
+                </button>
+              )}
+              
               <button
-                onClick={() => setShowCreateForm(true)}
-                className="professional-button flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={signOut}
+                className="professional-button px-3 py-2 text-gray-300 hover:text-white transition-colors"
               >
-                <Plus className="w-4 h-4" />
-                Create Space
+                Sign Out
               </button>
-            )}
-            <button
-              onClick={onSignOut}
-              className="professional-button flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* Navigation Tabs */}
+      <MainTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* User's Spaces */}
-        {userSpaces.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4">Your Spaces</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userSpaces.map((space) => {
-                const spaceWithStats = spaces.find(s => s.id === space.id);
-                if (!spaceWithStats) return null;
-                return (
-                  <div key={space.id} onClick={() => onSelectSpace(space.id)} className="cursor-pointer">
-                    <SpaceCard space={spaceWithStats} onClick={() => onSelectSpace(space.id)} />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        {activeTab === 'availability' && (
+          <AvailabilityCalendar
+            staffMembers={staffMembers}
+            availabilitySlots={availabilitySlots}
+            onAddStaff={addStaffMember}
+            onUpdateStaff={updateStaffMember}
+            onDeleteStaff={deleteStaffMember}
+            onAddSlot={addAvailabilitySlot}
+            onUpdateSlot={updateAvailabilitySlot}
+            onDeleteSlot={deleteAvailabilitySlot}
+            isOwner={isSpaceOwner}
+            spaceId={selectedSpaceId}
+          />
         )}
 
-        {/* Available Spaces */}
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">
-            {isAdmin ? 'Other Spaces' : 'Available Spaces'}
-          </h2>
-          
-          {spaces.filter(space => !isMember(space.id)).length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <Users className="w-12 h-12 mx-auto mb-4 text-gray-500" />
-              <p>No spaces available to join at the moment.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {spaces
-                .filter(space => !isMember(space.id))
-                .map((space) => (
-                  <SpaceCard 
-                    key={space.id} 
-                    space={space} 
-                    onClick={() => onSelectSpace(space.id)} 
-                    showJoinButton={true}
-                  />
-                ))}
-            </div>
-          )}
-        </div>
-
-        {/* Create Space Modal */}
-        {showCreateForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="professional-card rounded-xl shadow-2xl w-full max-w-md mx-4">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Create New Space</h3>
-                
-                <form onSubmit={handleCreateSpace} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Space Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={newSpace.name}
-                      onChange={(e) => setNewSpace({ ...newSpace, name: e.target.value })}
-                      placeholder="e.g., My Gaming Community"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={newSpace.description}
-                      onChange={(e) => setNewSpace({ ...newSpace, description: e.target.value })}
-                      placeholder="Brief description of your space..."
-                      rows={3}
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Admin Password *
-                    </label>
-                    <input
-                      type="password"
-                      value={newSpace.adminPassword}
-                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
-                      placeholder="Enter admin password"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Required to create and manage spaces
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Admin Password *
-                    </label>
-                    <input
-                      type="password"
-                      value={newSpace.adminPassword}
-                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
-                      placeholder="Enter admin password"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Required to create and manage spaces
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Admin Password *
-                    </label>
-                    <input
-                      type="password"
-                      value={newSpace.adminPassword}
-                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
-                      placeholder="Enter admin password"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Required to create and manage spaces
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Admin Password *
-                    </label>
-                    <input
-                      type="password"
-                      value={newSpace.adminPassword}
-                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
-                      placeholder="Enter admin password"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Required to create and manage spaces
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Admin Password *
-                    </label>
-                    <input
-                      type="password"
-                      value={newSpace.adminPassword}
-                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
-                      placeholder="Enter admin password"
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Required to create and manage spaces
-                    </p>
-                  </div>
-                  <div>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={newSpace.isPublic}
-                        onChange={(e) => setNewSpace({ ...newSpace, isPublic: e.target.checked })}
-                        className="rounded"
-                      />
-                      <span className="text-sm text-gray-300">Make this space public</span>
-                    </label>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Public spaces can be discovered and joined by anyone
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="submit"
-                      disabled={!newSpace.name.trim() || !newSpace.adminPassword.trim()}
-                      className="professional-button flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Create Space
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowCreateForm(false)}
-                      className="professional-button px-4 py-2 rounded-md transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+        {activeTab === 'streams' && (
+          <StreamsView
+            streams={streams}
+            staffMembers={staffMembers}
+            streamAssignments={streamAssignments}
+            streamRsvps={streamRsvps}
+            onCreateStream={createStream}
+            onUpdateStream={updateStream}
+            onDeleteStream={deleteStream}
+            onAssignStaff={assignStaffToStream}
+            onUpdateRsvp={updateStreamRsvp}
+            isOwner={isSpaceOwner}
+            spaceId={selectedSpaceId}
+          />
         )}
 
-        {/* Join Space Modal */}
-        {showJoinForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="professional-card rounded-xl shadow-2xl w-full max-w-md mx-4">
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <MessageSquare className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-lg font-semibold text-white">Request to Join Space</h3>
-                </div>
-                
-                <form onSubmit={handleJoinSpace} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Space
-                    </label>
-                    <div className="p-3 bg-gray-700 rounded-md">
-                      <div className="font-medium text-white">
-                        {spaces.find(s => s.id === showJoinForm)?.name}
-                      </div>
-                    </div>
-                  </div>
+        {activeTab === 'credits' && (
+          <CreditsView
+            staffMembers={staffMembers}
+            staffCredits={staffCredits}
+            creditTransactions={creditTransactions}
+            onAddTransaction={addCreditTransaction}
+            isOwner={isSpaceOwner}
+            spaceId={selectedSpaceId}
+          />
+        )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Message (optional)
-                    </label>
-                    <textarea
-                      value={joinMessage}
-                      onChange={(e) => setJoinMessage(e.target.value)}
-                      placeholder="Tell the space owner why you'd like to join..."
-                      rows={3}
-                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="submit"
-                      className="professional-button flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                    >
-                      Send Request
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowJoinForm(null);
-                        setJoinMessage('');
-                      }}
-                      className="professional-button px-4 py-2 rounded-md transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+        {activeTab === 'members' && isSpaceOwner && (
+          <MembersView
+            spaceId={selectedSpaceId}
+            spaceName={currentSpace?.name || ''}
+          />
         )}
       </main>
+
+      {/* Modals */}
+      {showJoinRequests && (
+        <JoinRequestsModal
+          requests={pendingRequests}
+          onApprove={approveJoinRequest}
+          onReject={rejectJoinRequest}
+          onClose={() => setShowJoinRequests(false)}
+        />
+      )}
+
+      {showSettings && currentSpace && (
+        <SpaceSettingsModal
+          space={currentSpace}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </div>
   );
 };
+
+export default App;
