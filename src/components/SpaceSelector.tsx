@@ -26,6 +26,11 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   loading,
   onSignOut,
 }) => {
+  // Add safety checks for props
+  const safeSpaces = spaces || [];
+  const safeUserSpaces = userSpaces || [];
+  const safeJoinRequests = joinRequests || [];
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState<string | null>(null);
   const [newSpace, setNewSpace] = useState({
@@ -172,7 +177,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   const handleCreateSpace = (e: React.FormEvent) => {
     e.preventDefault();
     if (newSpace.name.trim() && newSpace.adminPassword.trim()) {
-      onCreateSpace({
+      onCreateSpace?.({
         name: newSpace.name.trim(),
         description: newSpace.description.trim() || undefined,
         isPublic: newSpace.isPublic,
@@ -192,18 +197,18 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   const handleJoinSpace = (e: React.FormEvent) => {
     e.preventDefault();
     if (showJoinForm) {
-      onJoinSpace(showJoinForm, joinMessage.trim() || undefined);
+      onJoinSpace?.(showJoinForm, joinMessage.trim() || undefined);
       setJoinMessage('');
       setShowJoinForm(null);
     }
   };
 
   const hasJoinRequest = (spaceId: string) => {
-    return joinRequests.some(request => request.spaceId === spaceId && request.status === 'pending');
+    return safeJoinRequests.some(request => request.spaceId === spaceId && request.status === 'pending');
   };
 
   const getJoinRequestStatus = (spaceId: string) => {
-    const request = joinRequests.find(request => request.spaceId === spaceId);
+    const request = safeJoinRequests.find(request => request.spaceId === spaceId);
     if (!request) return null;
     
     // Check if rejection is within 7 days
@@ -221,7 +226,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   };
 
   const isMember = (spaceId: string) => {
-    return userSpaces.some(space => space.id === spaceId);
+    return safeUserSpaces.some(space => space.id === spaceId);
   };
 
   if (loading) {
@@ -261,7 +266,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
               </button>
             )}
             <button
-              onClick={onSignOut}
+              onClick={() => onSignOut?.()}
               className="professional-button flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
               title="Sign Out"
             >
@@ -274,16 +279,16 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* User's Spaces */}
-        {userSpaces.length > 0 && (
+        {safeUserSpaces.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-white mb-4">Your Spaces</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userSpaces.map((space) => {
-                const spaceWithStats = spaces.find(s => s.id === space.id);
+              {safeUserSpaces.map((space) => {
+                const spaceWithStats = safeSpaces.find(s => s.id === space.id);
                 if (!spaceWithStats) return null;
                 return (
-                  <div key={space.id} onClick={() => onSelectSpace(space.id)} className="cursor-pointer">
-                    <SpaceCard space={spaceWithStats} onClick={() => onSelectSpace(space.id)} />
+                  <div key={space.id} onClick={() => onSelectSpace?.(space.id)} className="cursor-pointer">
+                    <SpaceCard space={spaceWithStats} onClick={() => onSelectSpace?.(space.id)} />
                   </div>
                 );
               })}
@@ -297,20 +302,20 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
             {isAdmin ? 'Other Spaces' : 'Available Spaces'}
           </h2>
           
-          {spaces.filter(space => !isMember(space.id)).length === 0 ? (
+          {safeSpaces.filter(space => !isMember(space.id)).length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <Users className="w-12 h-12 mx-auto mb-4 text-gray-500" />
               <p>No spaces available to join at the moment.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {spaces
+              {safeSpaces
                 .filter(space => !isMember(space.id))
                 .map((space) => (
                   <SpaceCard 
                     key={space.id} 
                     space={space} 
-                    onClick={() => onSelectSpace(space.id)} 
+                    onClick={() => onSelectSpace?.(space.id)} 
                     showJoinButton={true}
                   />
                 ))}
@@ -474,7 +479,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
                     </label>
                     <div className="p-3 bg-gray-700 rounded-md">
                       <div className="font-medium text-white">
-                        {spaces.find(s => s.id === showJoinForm)?.name}
+                        {safeSpaces.find(s => s.id === showJoinForm)?.name}
                       </div>
                     </div>
                   </div>
