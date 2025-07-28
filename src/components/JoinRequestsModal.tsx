@@ -17,7 +17,7 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
 }) => {
   const [selectedRoles, setSelectedRoles] = React.useState<{ [key: string]: 'caster' | 'observer' }>({});
 
-  const handleApprove = (requestId: string) => {
+  const handleApprove = (requestId: string, role: 'caster' | 'observer' | 'admin') => {
     const role = selectedRoles[requestId] || 'observer';
     onApprove(requestId, role);
   };
@@ -93,10 +93,11 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
                         value={selectedRoles[request.id] || 'observer'}
                         onChange={(e) => setSelectedRoles({
                           ...selectedRoles,
-                          [request.id]: e.target.value as 'caster' | 'observer'
+                          [request.id]: e.target.value as 'caster' | 'observer' | 'admin'
                         })}
                         className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
+                        <option value="admin">Admin</option>
                         <option value="observer">Observer</option>
                         <option value="caster">Caster</option>
                       </select>
@@ -104,7 +105,7 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
                     
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleApprove(request.id)}
+                        onClick={() => handleApprove(request.id, selectedRoles[request.id] || 'observer')}
                         className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
                       >
                         <Check className="w-4 h-4" />

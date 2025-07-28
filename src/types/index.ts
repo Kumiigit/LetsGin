@@ -95,7 +95,7 @@ export interface SpaceMembership {
   id: string;
   spaceId: string;
   userId: string;
-  role: 'owner' | 'caster' | 'observer';
+  role: 'owner' | 'admin' | 'caster' | 'observer';
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt: string;
@@ -107,6 +107,7 @@ export interface JoinRequest {
   userId: string;
   message?: string;
   status: 'pending' | 'approved' | 'rejected';
+  role?: 'caster' | 'observer' | 'admin'; // Add role for pending requests
   createdAt: string;
   updatedAt: string;
 }

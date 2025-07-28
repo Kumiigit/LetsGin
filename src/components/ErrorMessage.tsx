@@ -11,10 +11,10 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   onRetry 
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-12">
+    <div className="flex flex-col items-center justify-center py-12 professional-card rounded-xl p-6">
       <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
-      <p className="text-gray-600 text-center mb-4 max-w-md">{message}</p>
+      <h3 className="text-lg font-semibold text-white mb-2">Something went wrong</h3>
+      <p className="text-gray-300 text-center mb-4 max-w-md">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}

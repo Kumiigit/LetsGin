@@ -96,8 +96,12 @@ const App: React.FC = () => {
 
   // Check if user is admin/owner of current space
   useEffect(() => {
-    if (user && currentSpace) {
-      setIsAdmin(currentSpace.ownerId === user.id);
+    if (user && currentSpace && spaceMembers) {
+      const isOwner = currentSpace.ownerId === user.id;
+      const isAdminMember = spaceMembers.some(
+        (member) => member.userId === user.id && member.role === 'admin'
+      );
+      setIsAdmin(isOwner || isAdminMember);
     } else {
       setIsAdmin(false);
     }
@@ -462,7 +466,7 @@ const App: React.FC = () => {
       {showJoinRequestsModal && (
         <JoinRequestsModal
           requests={pendingRequests}
-          onApprove={approveJoinRequest}
+          onApprove={(requestId, role) => approveJoinRequest(requestId, role)}
           onReject={rejectJoinRequest}
           onClose={() => setShowJoinRequestsModal(false)}
         />
