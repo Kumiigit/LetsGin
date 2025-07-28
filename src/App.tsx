@@ -354,6 +354,15 @@ const App: React.FC = () => {
 
             {activeTab === 'availability' && (
               <>
+                <StaffManager
+                  staff={staff}
+                  activeRole={activeRole}
+                  onAddStaff={addStaff}
+                  onRemoveStaff={removeStaff}
+                  selectedStaffId={selectedStaffId}
+                  onSelectStaff={setSelectedStaffId}
+                />
+                
                 <WeekNavigator
                   currentWeekStart={currentWeekStart}
                   onPreviousWeek={handlePreviousWeek}
@@ -428,19 +437,6 @@ const App: React.FC = () => {
             )}
           </div>
 
-          {/* Sidebar */}
-          {activeTab === 'availability' && (
-            <div className="lg:w-80">
-              <StaffManager
-                staff={staff}
-                activeRole={activeRole}
-                onAddStaff={addStaff}
-                onRemoveStaff={removeStaff}
-                selectedStaffId={selectedStaffId}
-                onSelectStaff={setSelectedStaffId}
-              />
-            </div>
-          )}
         </div>
       </main>
 
