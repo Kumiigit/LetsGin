@@ -99,7 +99,7 @@ const App: React.FC = () => {
     if (user && currentSpace && spaceMembers) {
       const isOwner = currentSpace.ownerId === user.id;
       const isAdminMember = spaceMembers.some(
-        (member) => member.userId === user.id && member.role === 'admin'
+        (member) => member.userId === user.id && (member.role === 'admin' || member.role === 'owner')
       );
       setIsAdmin(isOwner || isAdminMember);
     } else {

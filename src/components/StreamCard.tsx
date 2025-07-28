@@ -9,7 +9,7 @@ interface StreamCardProps {
   onUpdateRSVP: (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => void;
   onUpdateStreamStatus: (streamId: string, status: 'scheduled' | 'live' | 'completed' | 'cancelled', streamLink?: string) => void;
   onDeleteStream: (streamId: string) => Promise<void>;
-  isSpaceOwner?: boolean;
+  isSpaceAdmin?: boolean;
   isPast?: boolean;
 }
 
@@ -19,7 +19,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
   onUpdateRSVP,
   onUpdateStreamStatus,
   onDeleteStream,
-  isSpaceOwner = false,
+  isSpaceAdmin = false,
   isPast = false,
 }) => {
   const [showRSVPForm, setShowRSVPForm] = useState<string | null>(null);
@@ -172,7 +172,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
             {stream.status === 'cancelled' && <XCircle className="w-3 h-3 inline mr-1" />}
             {stream.status.charAt(0).toUpperCase() + stream.status.slice(1)}
           </span>
-          {!actuallyPast && isSpaceOwner && (
+          {!actuallyPast && isSpaceAdmin && (
             <div className="flex items-center gap-1">
               <button
                 onClick={() => handleStreamStatusUpdate('live')}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Users, Globe, Lock, ArrowRight, MessageSquare, LogOut, Image } from 'lucide-react';
 import { Space, SpaceWithStats, JoinRequest } from '../types';
 import { useSpaceAssets } from '../hooks/useSpaceAssets';
+import { useAuth } from '../hooks/useAuth';
 
 interface SpaceSelectorProps {
   spaces: SpaceWithStats[];
@@ -26,6 +27,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   loading,
   onSignOut,
 }) => {
+  const { user } = useAuth();
   // Add safety checks for props
   const safeSpaces = spaces || [];
   const safeUserSpaces = userSpaces || [];
@@ -196,7 +198,13 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
   const handleJoinSpace = (e: React.FormEvent) => {
     e.preventDefault();
     if (showJoinForm) {
-      onJoinSpace?.(showJoinForm, joinMessage.trim() || undefined);
+      // Get user's full name from user metadata or email
+      const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Unknown User';
+      const messageWithName = joinMessage.trim() 
+        ? `${joinMessage.trim()}\n\n- ${userName}`
+        : `Hi, I'd like to join your space.\n\n- ${userName}`;
+      
+      onJoinSpace?.(showJoinForm, messageWithName);
       setJoinMessage('');
       setShowJoinForm(null);
     }

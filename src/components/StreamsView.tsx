@@ -22,7 +22,7 @@ interface StreamsViewProps {
   onUpdateRSVP: (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => void;
   onUpdateStreamStatus: (streamId: string, status: 'scheduled' | 'live' | 'completed' | 'cancelled', streamLink?: string) => void;
   onDeleteStream: (streamId: string) => Promise<void>;
-  isSpaceOwner?: boolean;
+  isSpaceAdmin?: boolean;
 }
 
 export const StreamsView: React.FC<StreamsViewProps> = ({
@@ -32,7 +32,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
   onUpdateRSVP,
   onUpdateStreamStatus,
   onDeleteStream,
-  isSpaceOwner = false,
+  isSpaceAdmin = false,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showDiscordModal, setShowDiscordModal] = useState(false);
@@ -63,7 +63,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
             <h2 className="text-xl font-semibold text-white">Stream Schedule</h2>
           </div>
           <div className="flex items-center gap-3">
-            {isSpaceOwner && (
+            {isSpaceAdmin && (
               <>
                 <button
                   onClick={() => setShowDiscordModal(true)}
@@ -105,7 +105,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
         </div>
       </div>
 
-      {showCreateForm && isSpaceOwner && (
+      {showCreateForm && isSpaceAdmin && (
         <CreateStreamForm
           staff={staff}
           onSave={onCreateStream}

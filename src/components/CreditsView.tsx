@@ -7,7 +7,7 @@ interface CreditsViewProps {
   credits: StaffCredits[];
   transactions: CreditTransaction[];
   onAdjustCredits: (staffId: string, amount: number, reason: string) => void;
-  isSpaceOwner?: boolean;
+  isSpaceAdmin?: boolean;
 }
 
 export const CreditsView: React.FC<CreditsViewProps> = ({
@@ -15,7 +15,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
   credits,
   transactions,
   onAdjustCredits,
-  isSpaceOwner = false,
+  isSpaceAdmin = false,
 }) => {
   const [showAdjustForm, setShowAdjustForm] = useState<string | null>(null);
   const [adjustAmount, setAdjustAmount] = useState<number>(0);
@@ -138,7 +138,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                     <div className="text-lg font-bold text-blue-600">{caster.credits}</div>
                     <div className="text-xs text-gray-400">credits</div>
                   </div>
-                  {isSpaceOwner && (
+                  {isSpaceAdmin && (
                     <button
                       onClick={() => setShowAdjustForm(caster.id)}
                       className="p-1 text-gray-500 hover:text-blue-400 transition-colors"
@@ -175,7 +175,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
                     <div className="text-lg font-bold text-purple-600">{observer.credits}</div>
                     <div className="text-xs text-gray-400">credits</div>
                   </div>
-                  {isSpaceOwner && (
+                  {isSpaceAdmin && (
                     <button
                       onClick={() => setShowAdjustForm(observer.id)}
                       className="p-1 text-gray-500 hover:text-purple-400 transition-colors"
@@ -244,7 +244,7 @@ export const CreditsView: React.FC<CreditsViewProps> = ({
       </div>
 
       {/* Adjust Credits Modal */}
-      {showAdjustForm && isSpaceOwner && (
+      {showAdjustForm && isSpaceAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="professional-card rounded-xl shadow-2xl w-full max-w-md mx-4">
             <div className="p-6">
