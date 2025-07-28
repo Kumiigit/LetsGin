@@ -146,7 +146,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
   };
 
   return (
-    <div className={`border rounded-lg p-6 ${actuallyPast ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-700/50 backdrop-blur-sm border-gray-600'}`}>
+    <div className={`professional-card rounded-xl p-6 ${actuallyPast ? 'opacity-75' : ''}`}>
       <div className="flex items-start justify-between mb-4">
         <div>
           <h4 className="text-lg font-semibold text-white">{stream.title}</h4>

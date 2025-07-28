@@ -338,7 +338,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+      <div className="professional-card rounded-xl shadow-2xl p-6">
         <div className="flex items-center gap-2 mb-6">
           <Users className="w-5 h-5 text-green-400" />
           <h2 className="text-xl font-semibold text-white">Space Members</h2>
@@ -365,13 +365,13 @@ export const MembersView: React.FC<MembersViewProps> = ({
       </div>
 
       {/* Members List */}
-      <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 p-6">
+      <div className="professional-card rounded-xl shadow-2xl p-6">
         <h3 className="text-lg font-semibold text-white mb-4">Space Members & Staff</h3>
         
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-600">
+              <tr className="border-b border-gray-800">
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Name</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Role</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Type</th>
@@ -383,7 +383,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
             <tbody>
               {/* Space Members */}
               {members.map((member) => (
-                <tr key={member.id} className="border-b border-gray-700 hover:bg-gray-700/30">
+                <tr key={member.id} className="border-b border-gray-800 hover:bg-gray-900/30">
                   <td className="py-3 px-4">
                     <div>
                       <div className="font-medium text-white">{member.userName}</div>
@@ -442,7 +442,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
               
               {/* Staff Members */}
               {staff.map((staffMember) => (
-                <tr key={`staff-${staffMember.id}`} className="border-b border-gray-700 hover:bg-gray-700/30">
+                <tr key={`staff-${staffMember.id}`} className="border-b border-gray-800 hover:bg-gray-900/30">
                   <td className="py-3 px-4">
                     <div>
                       <div className="font-medium text-white">{staffMember.name}</div>

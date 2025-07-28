@@ -66,8 +66,8 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto border border-gray-700">
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+      <div className="professional-card rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-purple-400" />
             <h3 className="text-lg font-semibold text-white">Schedule New Stream</h3>
@@ -90,7 +90,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Weekly Community Stream"
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               required
             />
           </div>
@@ -104,7 +104,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
@@ -116,7 +116,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
@@ -143,7 +143,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description or notes about the stream..."
               rows={3}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
@@ -212,11 +212,11 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t border-gray-700">
+          <div className="flex gap-3 pt-4 border-t border-gray-800">
             <button
               type="submit"
               disabled={!title || !date || !startTime || !endTime || selectedCasters.length === 0}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="professional-button flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
               Schedule Stream
@@ -224,7 +224,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-gray-300 rounded-md hover:bg-gray-500 transition-colors"
+              className="professional-button px-4 py-2 rounded-md transition-colors"
             >
               Cancel
             </button>
