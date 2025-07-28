@@ -307,12 +307,17 @@ export function useSpaces(userId?: string) {
     name: string;
     description?: string;
     isPublic: boolean;
+    adminPassword?: string;
   }) => {
     try {
       if (!userId) {
         throw new Error('User not authenticated');
       }
 
+      // Verify admin password for space creation
+      if (spaceData.adminPassword !== 'MyAdmin') {
+        throw new Error('Invalid admin password. Space creation requires admin privileges.');
+      }
       const { data: space, error: spaceError } = await supabase
         .from('spaces')
         .insert([{

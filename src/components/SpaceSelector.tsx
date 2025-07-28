@@ -32,6 +32,7 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
     name: '',
     description: '',
     isPublic: true,
+    adminPassword: '',
   });
   const [joinMessage, setJoinMessage] = useState('');
 
@@ -80,7 +81,16 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-white mb-2 truncate">{space.name}</h3>
+              <div className="flex items-center gap-3 mb-2">
+                {logoAsset ? (
+                  <img
+                    src={getAssetUrl(logoAsset)}
+                    alt={space.name}
+                    className="w-8 h-8 rounded object-cover"
+                  />
+                ) : null}
+                <h3 className="text-lg font-semibold text-white truncate">{space.name}</h3>
+              </div>
               {space.description && (
                 <p className="text-gray-300 text-sm mb-3 line-clamp-2">{space.description}</p>
               )}
@@ -161,14 +171,15 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
 
   const handleCreateSpace = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSpace.name.trim()) {
+    if (newSpace.name.trim() && newSpace.adminPassword.trim()) {
       onCreateSpace({
         name: newSpace.name.trim(),
         description: newSpace.description.trim() || undefined,
         isPublic: newSpace.isPublic,
+        adminPassword: newSpace.adminPassword.trim(),
       })
         .then(() => {
-          setNewSpace({ name: '', description: '', isPublic: true });
+          setNewSpace({ name: '', description: '', isPublic: true, adminPassword: '' });
           setShowCreateForm(false);
         })
         .catch((error) => {
@@ -343,6 +354,22 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Admin Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={newSpace.adminPassword}
+                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
+                      placeholder="Enter admin password"
+                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Required to create and manage spaces
+                    </p>
+                  </div>
+                  <div>
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -360,7 +387,8 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
                   <div className="flex gap-3 pt-4">
                     <button
                       type="submit"
-                      className="professional-button flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      disabled={!newSpace.name.trim() || !newSpace.adminPassword.trim()}
+                      className="professional-button flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Create Space
                     </button>

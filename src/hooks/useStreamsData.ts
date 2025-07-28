@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { StreamWithDetails, Stream, StreamAssignment, StreamRSVP } from '../types';
+import { useDiscordWebhooks } from './useDiscordWebhooks';
 
 export function useStreamsData(spaceId?: string) {
   const [streams, setStreams] = useState<StreamWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { webhooks, postStreamToDiscord } = useDiscordWebhooks(spaceId);
 
   useEffect(() => {
     if (spaceId) {
@@ -212,6 +214,19 @@ export function useStreamsData(spaceId?: string) {
         if (assignmentsError) throw assignmentsError;
       }
 
+      // Send Discord notifications for active webhooks
+      const activeWebhooks = webhooks.filter(w => w.isActive && w.autoPostStreams);
+      for (const webhook of activeWebhooks) {
+        if (webhook.postTiming === 'on_creation' || webhook.postTiming === 'both') {
+          try {
+            await postStreamToDiscord(stream.id, webhook.id, 'creation');
+            console.log('Discord notification sent successfully for webhook:', webhook.id);
+          } catch (discordError) {
+            console.error('Failed to send Discord notification:', discordError);
+            // Don't fail stream creation if Discord notification fails
+          }
+        }
+      }
       await loadStreams();
     } catch (err) {
       throw err;

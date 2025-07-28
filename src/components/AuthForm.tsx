@@ -207,12 +207,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                   className="professional-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter admin password"
+                    placeholder="Enter 'MyAdmin' to create account"
                     required={isSignUp && mode === 'host'}
                   />
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
-                  Required to create and host spaces
+                  Enter 'MyAdmin' to create and host spaces
                 </p>
               </div>
             )}

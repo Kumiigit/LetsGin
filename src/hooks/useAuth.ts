@@ -40,7 +40,7 @@ export function useAuth() {
       setError(null);
 
       // Check if admin password is provided and valid
-      const isAdminSignup = adminPassword === 'AdminKumii';
+      const isAdminSignup = adminPassword === 'MyAdmin';
       setIsAdmin(isAdminSignup);
 
       if (adminPassword && !isAdminSignup) {
