@@ -47,7 +47,6 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
     const bannerAsset = getAssetByType('banner');
 
     return (
-    return (
       <div className="professional-card rounded-xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1">
         {/* Banner */}
         {bannerAsset ? (
@@ -167,7 +166,6 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
           </div>
         </div>
       </div>
-    );
     );
   };
 
