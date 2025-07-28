@@ -3,7 +3,7 @@ import { User, Lock, Mail, UserPlus, LogIn, Shield, Users, Search } from 'lucide
 
 interface AuthFormProps {
   onSignIn: (email: string, password: string) => Promise<void>;
-  onSignUp: (email: string, password: string, fullName: string, adminPassword?: string) => Promise<void>;
+  onSignUp: (email: string, password: string, fullName: string) => Promise<void>;
   onModeChange: (mode: 'host' | 'join') => void;
   error: string | null;
 }
@@ -19,7 +19,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,7 +29,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     
     try {
       if (isSignUp) {
-        await onSignUp(email, password, fullName, mode === 'host' ? adminPassword : undefined);
+        await onSignUp(email, password, fullName);
       } else {
         await onSignIn(email, password);
       }
@@ -52,7 +51,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     setEmail('');
     setPassword('');
     setFullName('');
-    setAdminPassword('');
   };
 
   const handleBack = () => {
@@ -61,7 +59,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     setEmail('');
     setPassword('');
     setFullName('');
-    setAdminPassword('');
   };
 
   if (mode === 'select') {
@@ -194,28 +191,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                 />
               </div>
             </div>
-
-            {isSignUp && mode === 'host' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Admin Password
-                </label>
-                <div className="relative">
-                  <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                  className="professional-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter 'MyAdmin' to create account"
-                    required={isSignUp && mode === 'host'}
-                  />
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  Enter 'MyAdmin' to create and host spaces
-                </p>
-              </div>
-            )}
 
             <button
               type="submit"

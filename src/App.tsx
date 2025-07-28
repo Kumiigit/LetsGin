@@ -312,7 +312,7 @@ export default function App() {
         spaces={spaces || []}
         userSpaces={userSpaces || []}
         joinRequests={joinRequests || []}
-        isAdmin={isAdmin}
+        isAdmin={true} // Allow all users to see create space option
         onCreateSpace={createSpace}
         onSelectSpace={selectSpace}
         onJoinSpace={joinSpace}
