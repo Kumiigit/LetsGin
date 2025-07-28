@@ -415,7 +415,7 @@ const App: React.FC = () => {
                 onUpdateRSVP={updateRSVP}
                 onUpdateStreamStatus={handleUpdateStreamStatus}
                 onDeleteStream={deleteStream}
-                isSpaceOwner={isAdmin}
+                isSpaceAdmin={isAdmin}
               />
             )}
 
@@ -425,7 +425,7 @@ const App: React.FC = () => {
                 credits={credits}
                 transactions={transactions}
                 onAdjustCredits={adjustCredits}
-                isSpaceOwner={isAdmin}
+                isSpaceAdmin={isAdmin}
               />
             )}
 
