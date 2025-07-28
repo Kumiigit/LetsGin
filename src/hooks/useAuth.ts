@@ -35,17 +35,9 @@ export function useAuth() {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, adminPassword?: string) => {
+  const signUp = async (email: string, password: string, fullName: string) => {
     try {
       setError(null);
-
-      // Check if admin password is provided and valid
-      const isAdminSignup = adminPassword === 'MyAdmin';
-      setIsAdmin(isAdminSignup);
-
-      if (adminPassword && !isAdminSignup) {
-        throw new Error('Invalid admin password');
-      }
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -53,7 +45,7 @@ export function useAuth() {
         options: {
           data: {
             full_name: fullName,
-            is_admin: isAdminSignup,
+            is_admin: false, // Admin status is determined when creating spaces
           },
         },
       });
@@ -100,7 +92,7 @@ export function useAuth() {
     user,
     loading,
     error,
-    isAdmin: user?.user_metadata?.is_admin || false,
+    isAdmin: true, // Allow all users to attempt space creation (password required)
     signUp,
     signIn,
     signOut,
