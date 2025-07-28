@@ -18,7 +18,6 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
   const [selectedRoles, setSelectedRoles] = React.useState<{ [key: string]: 'caster' | 'observer' }>({});
 
   const handleApprove = (requestId: string, role: 'caster' | 'observer' | 'admin') => {
-    const role = selectedRoles[requestId] || 'observer';
     onApprove(requestId, role);
   };
 
