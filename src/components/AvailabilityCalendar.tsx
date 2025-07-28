@@ -50,13 +50,13 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const getStatusColor = (status: 'available' | 'busy' | 'off' | null): string => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 border-green-300 text-green-800';
+        return 'bg-green-900/50 border-green-600 text-green-300';
       case 'busy':
-        return 'bg-red-100 border-red-300 text-red-800';
+        return 'bg-red-900/50 border-red-600 text-red-300';
       case 'off':
-        return 'bg-gray-100 border-gray-300 text-gray-600';
+        return 'bg-gray-800/50 border-gray-600 text-gray-400';
       default:
-        return 'bg-white border-gray-200 text-gray-400 hover:bg-gray-50';
+        return 'bg-gray-900/50 border-gray-700 text-gray-500 hover:bg-gray-800/50';
     }
   };
 
@@ -85,15 +85,15 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         </p>
         <div className="flex items-center gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div>
+            <div className="w-3 h-3 bg-green-900/50 border border-green-600 rounded"></div>
             <span className="text-gray-300">Available</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>
+            <div className="w-3 h-3 bg-red-900/50 border border-red-600 rounded"></div>
             <span className="text-gray-300">Busy</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded"></div>
+            <div className="w-3 h-3 bg-gray-800/50 border border-gray-600 rounded"></div>
             <span className="text-gray-300">Off</span>
           </div>
         </div>
