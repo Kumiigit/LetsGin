@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Users, Globe, Lock, ArrowRight, MessageSquare, LogOut, Image } from 'lucide-react';
 import { useSpaceAssets } from "./hooks/useSpaceAssets";
-import { useSpaceAssets } from '../hooks/useSpaceAssets';
 
 interface SpaceSelectorProps {
   spaces: SpaceWithStats[];
