@@ -1,31 +1,108 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from './hooks/useAuth';
+import { useSpaces } from './hooks/useSpaces';
+import { useSupabaseData } from './hooks/useSupabaseData';
+import { useStreamsData } from './hooks/useStreamsData';
+import { useCreditsData } from './hooks/useCreditsData';
+import { AuthForm } from './components/AuthForm';
+import { SpaceSelector } from './components/SpaceSelector';
+import { MainTabs } from './components/MainTabs';
+import { WeekNavigator } from './components/WeekNavigator';
+import { StaffManager } from './components/StaffManager';
+import { AvailabilityCalendar } from './components/AvailabilityCalendar';
+import { StaffAvailabilityForm } from './components/StaffAvailabilityForm';
+import { StreamsView } from './components/StreamsView';
+import { CreditsView } from './components/CreditsView';
+import { MembersView } from './components/MembersView';
+import { JoinRequestsModal } from './components/JoinRequestsModal';
 import { SpaceSettingsModal } from './components/SpaceSettingsModal';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
-import { SpaceBrandingModal } from './components/SpaceBrandingModal';
-import { DiscordIntegrationModal } from './components/DiscordIntegrationModal';
-import { useSpaceAssets } from './hooks/useSpaceAssets';
-import { SpaceBrandingModal } from './components/SpaceBrandingModal';
-import { DiscordIntegrationModal } from './components/DiscordIntegrationModal';
-import { useSpaceAssets } from './hooks/useSpaceAssets';
 import { formatDate, getWeekDates } from './utils/dateUtils';
-import { Settings, UserPlus, LogOut, Bell, Image, MessageSquare } from 'lucide-react';
+import { Settings, UserPlus, LogOut, Bell } from 'lucide-react';
 import { Staff, TimeSlot } from './types';
 
 export default function App() {
-  // ... existing code ...
+  const { user, loading: authLoading, error: authError, isAdmin, signUp, signIn, signOut } = useAuth();
+  const [mode, setMode] = useState<'host' | 'join' | null>(null);
   
   const {
+    spaces,
+    userSpaces,
+    joinRequests,
+    pendingRequests,
+    spaceMembers,
+    currentSpace,
+    loading: spacesLoading,
+    error: spacesError,
+    createSpace,
+    joinSpace,
+    approveJoinRequest,
+    rejectJoinRequest,
+    updateMemberRole,
+    removeMember,
+    updateSpace,
+    selectSpace,
+    refreshSpaces,
+    refreshSpaceMembers,
+  } = useSpaces(user?.id);
+
+  const {
+    staff,
+    availability,
+    loading: dataLoading,
+    error: dataError,
+    addStaff,
+    removeStaff,
+    saveAvailability,
+    refreshData,
+  } = useSupabaseData(currentSpace?.id);
+
+  const {
+    streams,
+    loading: streamsLoading,
+    error: streamsError,
+    createStream,
+    updateRSVP,
+    updateStreamStatus,
+    deleteStream,
+    refreshStreams,
+  } = useStreamsData(currentSpace?.id);
+
+  const {
+    credits,
+    transactions,
+    loading: creditsLoading,
+    error: creditsError,
+    awardStreamCredits,
+    adjustCredits,
     refreshCredits,
   } = useCreditsData(currentSpace?.id);
 
   // UI State
   const [activeTab, setActiveTab] = useState<'availability' | 'streams' | 'credits' | 'members'>('availability');
-  // ... existing state ...
+  const [activeRole, setActiveRole] = useState<'caster' | 'observer'>('caster');
+  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - today.getDay() + 1);
+    return monday;
+  });
+  const [showAvailabilityForm, setShowAvailabilityForm] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<{
+    staffId: string;
+    date: string;
+    time: string;
+  } | null>(null);
   const [showJoinRequestsModal, setShowJoinRequestsModal] = useState(false);
   const [showSpaceSettingsModal, setShowSpaceSettingsModal] = useState(false);
 
   // Derived state
-  // ... existing code ...
+  const weekDates = getWeekDates(currentWeekStart);
+  const isSpaceOwner = currentSpace?.ownerId === user?.id;
+  const hasJoinRequests = (pendingRequests || []).length > 0;
+
   // Event handlers
   const handlePreviousWeek = () => {
     const newStart = new Date(currentWeekStart);
@@ -204,7 +281,6 @@ export default function App() {
     if (!selectedTimeSlot) return undefined;
     return staff?.find(s => s.id === selectedTimeSlot.staffId);
   };
-
   if (authLoading) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center">
@@ -250,12 +326,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div>
-                <h1 className="text-xl font-semibold text-white">
-                  {currentSpace.name}
-                </h1>
-              </div>
-              
+              <h1 className="text-xl font-semibold text-white">
+                {currentSpace.name}
+              </h1>
               <button
                 onClick={() => selectSpace('')}
                 className="text-sm text-gray-300 hover:text-white transition-colors"
@@ -263,7 +336,6 @@ export default function App() {
                 Switch Space
               </button>
             </div>
-            
             <div className="flex items-center space-x-4">
               {isSpaceOwner && (
                 <button
