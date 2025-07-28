@@ -386,6 +386,57 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
                       Required to create and manage spaces
                     </p>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Admin Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={newSpace.adminPassword}
+                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
+                      placeholder="Enter admin password"
+                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Required to create and manage spaces
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Admin Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={newSpace.adminPassword}
+                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
+                      placeholder="Enter admin password"
+                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Required to create and manage spaces
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Admin Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={newSpace.adminPassword}
+                      onChange={(e) => setNewSpace({ ...newSpace, adminPassword: e.target.value })}
+                      placeholder="Enter admin password"
+                      className="professional-input w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Required to create and manage spaces
+                    </p>
+                  </div>
                   <div>
                     <label className="flex items-center gap-2">
                       <input
@@ -485,3 +536,5 @@ export const SpaceSelector: React.FC<SpaceSelectorProps> = ({
     </div>
   );
 };
+
+export default App;
