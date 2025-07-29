@@ -262,12 +262,17 @@ export function useDiscordWebhooks(spaceId?: string) {
         throw new Error(`Discord API error: ${response.status} ${response.statusText}`);
       }
 
+      // Get the Discord message ID from the response
+      const discordResponse = await response.json();
+      const discordMessageId = discordResponse.id;
+
       // Record the post
       const { data: postData, error: postError } = await supabase
         .from('stream_discord_posts')
         .insert({
           stream_id: streamData.id,
           webhook_id: webhookId,
+          discord_message_id: discordMessageId,
           post_type: postType,
           success: true,
         })
