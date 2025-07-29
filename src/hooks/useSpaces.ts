@@ -460,6 +460,33 @@ export function useSpaces(userId?: string) {
 
   const removeMember = async (membershipId: string) => {
     try {
+      // First, get the membership details before deleting
+      const { data: membership, error: fetchError } = await supabase
+        .from('space_memberships')
+        .select('user_id, space_id')
+        .eq('id', membershipId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Update the join request status to rejected when removing a member
+      if (membership) {
+        const { error: updateError } = await supabase
+          .from('join_requests')
+          .update({ 
+            status: 'rejected',
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', membership.user_id)
+          .eq('space_id', membership.space_id);
+
+        if (updateError) {
+          console.error('Failed to update join request status:', updateError);
+          // Don't throw here as we still want to remove the membership
+        }
+      }
+
+      // Then delete the membership
       const { error } = await supabase
         .from('space_memberships')
         .delete()
