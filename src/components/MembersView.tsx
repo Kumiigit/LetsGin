@@ -18,7 +18,7 @@ interface MembersViewProps {
   staff: Staff[];
   onUpdateMemberRole: (membershipId: string, newRole: 'admin' | 'caster' | 'observer') => void;
   onRemoveMember: (membershipId: string) => void;
-  onUpdateStaffRole?: (staffId: string, newRole: 'caster' | 'observer') => void;
+  onUpdateStaffRole?: (staffId: string, newRole: 'caster' | 'observer' | 'production') => void;
   onRemoveStaff?: (staffId: string) => void;
 }
 
@@ -99,6 +99,8 @@ export const MembersView: React.FC<MembersViewProps> = ({
         return <Mic className="w-4 h-4 text-green-500" />;
       case 'observer':
         return <Eye className="w-4 h-4 text-purple-500" />;
+      case 'production':
+        return <Users className="w-4 h-4 text-orange-500" />;
       default:
         return <Users className="w-4 h-4 text-gray-500" />;
     }
@@ -114,6 +116,8 @@ export const MembersView: React.FC<MembersViewProps> = ({
         return 'bg-green-100 text-green-800 border-green-200';
       case 'observer':
         return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'production':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -152,7 +156,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
     });
   };
 
-  const handleRoleChange = (membershipId: string, newRole: 'admin' | 'caster' | 'observer') => {
+  const handleRoleChange = (membershipId: string, newRole: 'admin' | 'caster' | 'observer' | 'production') => {
     try {
       onUpdateMemberRole(membershipId, newRole);
       setShowDropdown(null);
@@ -177,7 +181,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
     }
   };
 
-  const handleStaffRoleChange = (staffId: string, newRole: 'caster' | 'observer') => {
+  const handleStaffRoleChange = (staffId: string, newRole: 'caster' | 'observer' | 'production') => {
     try {
       console.log('Changing staff role:', staffId, newRole);
       console.log('onUpdateStaffRole function:', typeof onUpdateStaffRole);
@@ -211,6 +215,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
   const totalStaff = staff?.length || 0;
   const staffCasters = staff?.filter(s => s?.role === 'caster')?.length || 0;
   const staffObservers = staff?.filter(s => s?.role === 'observer')?.length || 0;
+  const staffProduction = staff?.filter(s => s?.role === 'production')?.length || 0;
   const adminCount = members?.filter(m => m?.role === 'admin')?.length || 0;
 
   const renderDropdownMenu = (id: string, type: 'member' | 'staff', currentRole: string) => {
@@ -267,6 +272,19 @@ export const MembersView: React.FC<MembersViewProps> = ({
                   Observer
                 </button>
               )}
+              {currentRole !== 'production' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('Production button clicked for:', id);
+                    handleRoleChange(id, 'production');
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-600 flex items-center gap-2"
+                >
+                  <Users className="w-4 h-4 text-orange-500" />
+                  Production
+                </button>
+              )}
               <div className="border-t border-gray-600 mt-1">
                 <button
                   onClick={(e) => {
@@ -314,6 +332,20 @@ export const MembersView: React.FC<MembersViewProps> = ({
                   Observer
                 </button>
               )}
+              {currentRole !== 'production' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const staffId = id.startsWith('staff-') ? id.replace('staff-', '') : id;
+                    console.log('Staff production button clicked for:', staffId);
+                    handleStaffRoleChange(staffId, 'production');
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-600 flex items-center gap-2"
+                >
+                  <Users className="w-4 h-4 text-orange-500" />
+                  Production
+                </button>
+              )}
               <div className="border-t border-gray-600 mt-1">
                 <button
                   onClick={(e) => {
@@ -344,7 +376,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
           <h2 className="text-xl font-semibold text-white">Space Members</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-green-900/50 backdrop-blur-sm border border-green-700 rounded-lg p-4">
             <div className="text-2xl font-bold text-green-600">{totalMembers + totalStaff}</div>
             <div className="text-sm text-green-300">Total People</div>
@@ -356,6 +388,10 @@ export const MembersView: React.FC<MembersViewProps> = ({
           <div className="bg-purple-900/50 backdrop-blur-sm border border-purple-700 rounded-lg p-4">
             <div className="text-2xl font-bold text-purple-600">{staffObservers}</div>
             <div className="text-sm text-purple-300">Observers</div>
+          </div>
+          <div className="bg-orange-900/50 backdrop-blur-sm border border-orange-700 rounded-lg p-4">
+            <div className="text-2xl font-bold text-orange-600">{staffProduction}</div>
+            <div className="text-sm text-orange-300">Production</div>
           </div>
           <div className="bg-yellow-900/50 backdrop-blur-sm border border-yellow-700 rounded-lg p-4">
             <div className="text-2xl font-bold text-yellow-600">{adminCount}</div>
@@ -395,7 +431,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
                       {getRoleIcon(member.role)}
                       <span className="capitalize">
                         {member.role || <span className="text-red-500">NO ROLE</span>}
-                        {!['owner', 'admin', 'caster', 'observer'].includes(member.role) && (
+                        {!['owner', 'admin', 'caster', 'observer', 'production'].includes(member.role) && (
                           <span className="text-red-500 ml-1">(INVALID: {member.role})</span>
                         )}
                       </span>
@@ -454,7 +490,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
                       {getRoleIcon(staffMember.role)}
                       <span className="capitalize">
                         {staffMember.role || <span className="text-red-500">NO ROLE</span>}
-                        {!['caster', 'observer'].includes(staffMember.role) && (
+                        {!['caster', 'observer', 'production'].includes(staffMember.role) && (
                           <span className="text-red-500 ml-1">(INVALID: {staffMember.role})</span>
                         )}
                       </span>

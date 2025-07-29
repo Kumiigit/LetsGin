@@ -4,7 +4,7 @@ import { JoinRequestWithUser } from '../types';
 
 interface JoinRequestsModalProps {
   requests: JoinRequestWithUser[];
-  onApprove: (requestId: string, role: 'caster' | 'observer') => void;
+  onApprove: (requestId: string, role: 'caster' | 'observer' | 'production') => void;
   onReject: (requestId: string) => void;
   onClose: () => void;
 }
@@ -15,9 +15,9 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
   onReject,
   onClose,
 }) => {
-  const [selectedRoles, setSelectedRoles] = React.useState<{ [key: string]: 'caster' | 'observer' }>({});
+  const [selectedRoles, setSelectedRoles] = React.useState<{ [key: string]: 'caster' | 'observer' | 'production' | 'admin' }>({});
 
-  const handleApprove = (requestId: string, role: 'caster' | 'observer' | 'admin') => {
+  const handleApprove = (requestId: string, role: 'caster' | 'observer' | 'production' | 'admin') => {
     onApprove(requestId, role);
   };
 
@@ -92,13 +92,14 @@ export const JoinRequestsModal: React.FC<JoinRequestsModalProps> = ({
                         value={selectedRoles[request.id] || 'observer'}
                         onChange={(e) => setSelectedRoles({
                           ...selectedRoles,
-                          [request.id]: e.target.value as 'caster' | 'observer' | 'admin'
+                         [request.id]: e.target.value as 'caster' | 'observer' | 'production' | 'admin'
                         })}
                         className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="admin">Admin</option>
                         <option value="observer">Observer</option>
                         <option value="caster">Caster</option>
+                       <option value="production">Production</option>
                       </select>
                     </div>
                     

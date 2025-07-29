@@ -76,7 +76,7 @@ const App: React.FC = () => {
   } = useCreditsData(currentSpace?.id);
 
   const [activeTab, setActiveTab] = useState<'availability' | 'streams' | 'credits' | 'members'>('availability');
-  const [activeRole, setActiveRole] = useState<'caster' | 'observer'>('caster');
+  const [activeRole, setActiveRole] = useState<'caster' | 'observer' | 'production'>('caster');
   const [selectedStaffId, setSelectedStaffId] = useState<string>('');
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
@@ -137,6 +137,7 @@ const App: React.FC = () => {
     description?: string;
     casters: string[];
     observers: string[];
+    production: string[];
   }) => {
     try {
       await createStream(streamData);
@@ -175,7 +176,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUpdateStaffRole = async (staffId: string, newRole: 'caster' | 'observer') => {
+  const handleUpdateStaffRole = async (staffId: string, newRole: 'caster' | 'observer' | 'production') => {
     try {
       const { error } = await supabase
         .from('staff_members')
@@ -412,6 +413,16 @@ const App: React.FC = () => {
                     }`}
                   >
                     Observers
+                  </button>
+                  <button
+                    onClick={() => setActiveRole('production')}
+                    className={`professional-button px-4 py-2 rounded-lg transition-colors ${
+                      activeRole === 'production'
+                        ? 'bg-orange-600 text-white'
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    Production
                   </button>
                 </div>
 

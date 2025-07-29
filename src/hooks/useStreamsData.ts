@@ -169,6 +169,7 @@ export function useStreamsData(spaceId?: string) {
     description?: string;
     casters: string[];
     observers: string[];
+    production: string[];
   }) => {
     if (!spaceId) throw new Error('No space selected');
 
@@ -202,6 +203,12 @@ export function useStreamsData(spaceId?: string) {
           stream_id: stream.id,
           staff_id: observerId,
           role: 'observer',
+          is_primary: true,
+        })),
+        ...streamData.production.map(productionId => ({
+          stream_id: stream.id,
+          staff_id: productionId,
+          role: 'production',
           is_primary: true,
         })),
       ];
