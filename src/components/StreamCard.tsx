@@ -47,6 +47,11 @@ export const StreamCard: React.FC<StreamCardProps> = ({
     .map(a => getStaffById(a.staffId))
     .filter(Boolean);
 
+  const assignedProduction = stream.assignments
+    .filter(a => a.role === 'production')
+    .map(a => getStaffById(a.staffId))
+    .filter(Boolean);
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -222,7 +227,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <h5 className="font-medium text-white mb-2">Assigned Casters</h5>
           <div className="space-y-1">
@@ -239,6 +244,16 @@ export const StreamCard: React.FC<StreamCardProps> = ({
             {assignedObservers.map(observer => (
               <div key={observer?.id} className="text-sm text-gray-300">
                 {observer?.name}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h5 className="font-medium text-white mb-2">Assigned Production</h5>
+          <div className="space-y-1">
+            {assignedProduction.map(prod => (
+              <div key={prod?.id} className="text-sm text-gray-300">
+                {prod?.name}
               </div>
             ))}
           </div>

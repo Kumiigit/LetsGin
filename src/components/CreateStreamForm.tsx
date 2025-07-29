@@ -28,13 +28,15 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
   const [description, setDescription] = useState('');
   const [selectedCasters, setSelectedCasters] = useState<string[]>([]);
   const [selectedObservers, setSelectedObservers] = useState<string[]>([]);
+  const [selectedProduction, setSelectedProduction] = useState<string[]>([]);
 
   const casters = staff.filter(member => member.role === 'caster');
   const observers = staff.filter(member => member.role === 'observer');
+  const production = staff.filter(member => member.role === 'production');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title && date && startTime && endTime && selectedCasters.length > 0) {
+    if (title && date && startTime && endTime && (selectedCasters.length > 0 || selectedProduction.length > 0)) {
       onSave({
         title,
         date,
@@ -43,6 +45,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
         description: description || undefined,
         casters: selectedCasters,
         observers: selectedObservers,
+        production: selectedProduction,
       });
       onClose();
     }
@@ -55,8 +58,14 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
           ? prev.filter(id => id !== staffId)
           : prev.length < 2 ? [...prev, staffId] : prev
       );
-    } else {
+    } else if (role === 'observer') {
       setSelectedObservers(prev => 
+        prev.includes(staffId) 
+          ? prev.filter(id => id !== staffId)
+          : prev.length < 2 ? [...prev, staffId] : prev
+      );
+    } else if (role === 'production') {
+      setSelectedProduction(prev => 
         prev.includes(staffId) 
           ? prev.filter(id => id !== staffId)
           : prev.length < 2 ? [...prev, staffId] : prev
@@ -147,7 +156,7 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-3">
                 Select Casters * (max 2)
@@ -176,8 +185,8 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
                   </label>
                 ))}
               </div>
-              {selectedCasters.length === 0 && (
-                <p className="text-sm text-red-400 mt-2">At least one caster is required</p>
+              {selectedCasters.length === 0 && selectedProduction.length === 0 && (
+                <p className="text-sm text-red-400 mt-2">At least one caster or production member is required</p>
               )}
             </div>
 
@@ -210,12 +219,42 @@ export const CreateStreamForm: React.FC<CreateStreamFormProps> = ({
                 ))}
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Select Production (max 2)
+              </label>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {production.map(prod => (
+                  <label
+                    key={prod.id}
+                    className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                      selectedProduction.includes(prod.id)
+                        ? 'border-orange-500 bg-orange-900/30'
+                        : 'border-gray-600 hover:border-gray-500'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedProduction.includes(prod.id)}
+                      onChange={() => toggleStaffSelection(prod.id, 'production')}
+                      disabled={!selectedProduction.includes(prod.id) && selectedProduction.length >= 2}
+                      className="mr-3"
+                    />
+                    <div>
+                      <div className="font-medium text-white">{prod.name}</div>
+                      <div className="text-sm text-gray-300">{prod.email}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-gray-800">
             <button
               type="submit"
-              disabled={!title || !date || !startTime || !endTime || selectedCasters.length === 0}
+              disabled={!title || !date || !startTime || !endTime || (selectedCasters.length === 0 && selectedProduction.length === 0)}
               className="professional-button flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />

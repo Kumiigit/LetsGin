@@ -2,7 +2,7 @@ export interface Staff {
   id: string;
   name: string;
   email: string;
-  role: 'caster' | 'observer';
+  role: 'caster' | 'observer' | 'production';
   avatar?: string;
 }
 
@@ -38,7 +38,7 @@ export interface StreamAssignment {
   id: string;
   streamId: string;
   staffId: string;
-  role: 'caster' | 'observer';
+  role: 'caster' | 'observer' | 'production';
   isPrimary: boolean;
   createdAt: string;
 }
@@ -95,7 +95,7 @@ export interface SpaceMembership {
   id: string;
   spaceId: string;
   userId: string;
-  role: 'owner' | 'admin' | 'caster' | 'observer';
+  role: 'owner' | 'admin' | 'caster' | 'observer' | 'production';
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt: string;
@@ -107,7 +107,7 @@ export interface JoinRequest {
   userId: string;
   message?: string;
   status: 'pending' | 'approved' | 'rejected';
-  role?: 'caster' | 'observer' | 'admin'; // Add role for pending requests
+  role?: 'caster' | 'observer' | 'production' | 'admin'; // Add role for pending requests
   createdAt: string;
   updatedAt: string;
 }

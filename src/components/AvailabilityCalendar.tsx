@@ -5,7 +5,7 @@ import { formatTime, getDayName, getMonthDay, generateTimeSlots } from '../utils
 
 interface AvailabilityCalendarProps {
   staff: Staff[];
-  activeRole: 'caster' | 'observer';
+  activeRole: 'caster' | 'observer' | 'production';
   availability: { [staffId: string]: TimeSlot[] };
   weekDates: Date[];
   onTimeSlotClick: (staffId: string, date: string, time: string) => void;
@@ -81,7 +81,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           <h2 className="text-xl font-semibold text-white">Weekly Availability</h2>
         </div>
         <p className="text-gray-300 mt-1">
-          {activeRole === 'caster' ? 'Caster' : 'Observer'} availability for the selected week
+          {activeRole === 'caster' ? 'Caster' : activeRole === 'observer' ? 'Observer' : 'Production'} availability for the selected week
         </p>
         <div className="flex items-center gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">

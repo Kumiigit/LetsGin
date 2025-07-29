@@ -4,7 +4,7 @@ import { Staff } from '../types';
 
 interface StaffManagerProps {
   staff: Staff[];
-  activeRole: 'caster' | 'observer';
+  activeRole: 'caster' | 'observer' | 'production';
   onAddStaff: (staff: Omit<Staff, 'id'>) => void;
   onRemoveStaff: (staffId: string) => void;
   selectedStaffId?: string;
@@ -53,7 +53,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
           className="professional-button flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add {activeRole === 'caster' ? 'Caster' : 'Observer'}
+          Add {activeRole === 'caster' ? 'Caster' : activeRole === 'observer' ? 'Observer' : 'Production'}
         </button>
       </div>
 
@@ -85,7 +85,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
               type="submit"
               className="professional-button px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
-              Add {activeRole === 'caster' ? 'Caster' : 'Observer'}
+              Add {activeRole === 'caster' ? 'Caster' : activeRole === 'observer' ? 'Observer' : 'Production'}
             </button>
             <button
               type="button"
@@ -135,7 +135,7 @@ export const StaffManager: React.FC<StaffManagerProps> = ({
       {filteredStaff.length === 0 && (
         <div className="text-center py-8 text-gray-400">
           <Users className="w-12 h-12 mx-auto mb-4 text-gray-500" />
-          <p>No {activeRole}s added yet. Click "Add {activeRole === 'caster' ? 'Caster' : 'Observer'}" to get started.</p>
+          <p>No {activeRole}s added yet. Click "Add {activeRole === 'caster' ? 'Caster' : activeRole === 'observer' ? 'Observer' : 'Production'}" to get started.</p>
         </div>
       )}
     </div>
