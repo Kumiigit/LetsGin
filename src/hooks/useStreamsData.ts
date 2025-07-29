@@ -226,7 +226,23 @@ export function useStreamsData(spaceId?: string) {
       for (const webhook of activeWebhooks) {
         if (webhook.postTiming === 'on_creation' || webhook.postTiming === 'both') {
           try {
-            await postStreamToDiscord(stream.id, webhook.id, 'creation');
+            // Get complete stream data with assignments for Discord
+            const { data: completeStreamData, error: streamDataError } = await supabase
+              .from('streams')
+              .select(`
+                *,
+                stream_assignments!inner(
+                  staff_id,
+                  role,
+                  staff_members!inner(name)
+                )
+              `)
+              .eq('id', stream.id)
+              .single();
+
+            if (streamDataError) throw streamDataError;
+
+            await postStreamToDiscord(completeStreamData, webhook.id, 'creation');
             console.log('Discord notification sent successfully for webhook:', webhook.id);
           } catch (discordError) {
             console.error('Failed to send Discord notification:', discordError);
@@ -316,6 +332,187 @@ export function useStreamsData(spaceId?: string) {
       if (discordError) {
         console.error('Failed to fetch Discord posts:', discordError);
       } else if (discordPosts && discordPosts.length > 0) {
+        // Get complete updated stream data with assignments for Discord
+        const { data: completeStreamData, error: streamDataError } = await supabase
+          .from('streams')
+          .select(`
+            *,
+            stream_assignments!inner(
+              staff_id,
+              role,
+              staff_members!inner(name)
+            )
+          `)
+          .eq('id', streamId)
+          .single();
+
+        if (streamDataError) {
+          console.error('Failed to fetch updated stream data:', streamDataError);
+        } else {
+          for (const post of discordPosts) {
+            if (post.discord_message_id) {
+              try {
+                await editStreamDiscordPost(completeStreamData, post.webhook_id, post.discord_message_id);
+                console.log('Discord message updated successfully');
+              } catch (discordUpdateError) {
+                console.error('Failed to update Discord message:', discordUpdateError);
+                // Don't fail stream update if Discord update fails
+              }
+            }
+          }
+        }
+      }
+
+      console.log('Stream updated successfully');
+      await loadStreams();
+    } catch (err) {
+      console.error('Error updating stream:', err);
+      throw err;
+    }
+  };
+  const updateRSVP = async (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => {
+    try {
+      console.log('Updating RSVP:', { streamId, staffId, status, notes });
+      
+      // Check if the staff member exists in either staff_members or space_memberships
+      let staffExists = false;
+      
+      // First check staff_members table
+      const { data: staffCheck } = await supabase
+        .from('staff_members')
+        .select('id')
+        .eq('id', staffId)
+        .single();
+      
+      if (staffCheck) {
+        staffExists = true;
+      } else {
+        // If not in staff_members, check if they're a space member
+        const { data: memberCheck } = await supabase
+          .from('space_memberships')
+          .select('user_id')
+          .eq('user_id', staffId)
+          .eq('status', 'approved')
+          .single();
+        
+        if (memberCheck) {
+          staffExists = true;
+        }
+      }
+      
+      if (!staffExists) {
+        throw new Error('You must be a member of this space to RSVP.');
+      }
+
+      const { error } = await supabase
+        .from('stream_rsvps')
+        .upsert({
+          stream_id: streamId,
+          staff_id: staffId,
+          status,
+          notes,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'stream_id,staff_id'
+        });
+
+      if (error) throw error;
+      
+      console.log('RSVP updated successfully');
+      
+      // Force refresh the streams data to ensure UI updates immediately
+      await loadStreams();
+    } catch (err) {
+      console.error('Error updating RSVP:', err);
+      throw err;
+    }
+  };
+
+  const updateStreamStatus = async (streamId: string, status: 'scheduled' | 'live' | 'completed' | 'cancelled', streamLink?: string) => {
+    try {
+      console.log('Updating stream status:', { streamId, status, streamLink });
+      
+      const updateData: any = { status };
+      if (streamLink !== undefined) {
+        updateData.stream_link = streamLink;
+      }
+
+      const { error } = await supabase
+        .from('streams')
+        .update(updateData)
+        .eq('id', streamId);
+
+      if (error) throw error;
+      
+      console.log('Stream status updated successfully');
+
+      // If marking as completed, return stream data for credits processing
+      if (status === 'completed') {
+        const { data: streamData } = await supabase
+          .from('streams')
+          .select(`
+            *,
+            stream_assignments!inner(staff_id, role)
+          `)
+          .eq('id', streamId)
+          .single();
+
+        return streamData;
+      }
+      
+      // Force refresh the streams data to ensure UI updates immediately
+      await loadStreams();
+    } catch (err) {
+      console.error('Error updating stream status:', err);
+      throw err;
+    }
+  };
+
+  const deleteStream = async (streamId: string) => {
+    try {
+      console.log('Deleting stream:', streamId);
+      
+      const { error } = await supabase
+        .from('streams')
+        .delete()
+        .eq('id', streamId);
+
+      if (error) throw error;
+      
+      console.log('Stream deleted successfully');
+      
+      // Force refresh the streams data to ensure UI updates immediately
+      await loadStreams();
+    } catch (err) {
+      console.error('Error deleting stream:', err);
+      throw err;
+    }
+  };
+
+  return {
+    streams,
+    loading,
+    error,
+    createStream,
+    updateStream,
+    updateRSVP,
+    updateStreamStatus,
+    deleteStream,
+    refreshStreams: loadStreams,
+  };
+}
+        for (const post of discordPosts) {
+          if (post.discord_message_id) {
+            try {
+              await editStreamDiscordPost(streamId, post.webhook_id, post.discord_message_id);
+              console.log('Discord message updated successfully');
+            } catch (discordUpdateError) {
+              console.error('Failed to update Discord message:', discordUpdateError);
+              // Don't fail stream update if Discord update fails
+            }
+          }
+        }
+      }
         for (const post of discordPosts) {
           if (post.discord_message_id) {
             try {

@@ -169,34 +169,17 @@ export function useDiscordWebhooks(spaceId?: string) {
   };
 
   const postStreamToDiscord = async (
-    streamId: string,
+    streamData: any,
     webhookId: string,
     postType: 'creation' | 'reminder'
   ): Promise<StreamDiscordPost> => {
     try {
-      // Get stream details
-      const { data: streamData, error: streamError } = await supabase
-        .from('streams')
-        .select(`
-          *,
-          stream_assignments!inner(
-            staff_id,
-            role,
-            staff_members!inner(name)
-          )
-        `)
-        .eq('id', streamId)
-        .single();
-
-      if (streamError) throw streamError;
-
       // Get webhook details
       const webhook = webhooks.find(w => w.id === webhookId);
       if (!webhook) throw new Error('Webhook not found');
 
       // Format stream data for Discord
       const streamDate = new Date(`${streamData.date}T${streamData.start_time}`);
-      const endDate = new Date(`${streamData.date}T${streamData.end_time}`);
       
       const casters = streamData.stream_assignments
         .filter((a: any) => a.role === 'caster')
@@ -204,6 +187,10 @@ export function useDiscordWebhooks(spaceId?: string) {
       
       const observers = streamData.stream_assignments
         .filter((a: any) => a.role === 'observer')
+        .map((a: any) => a.staff_members.name);
+
+      const production = streamData.stream_assignments
+        .filter((a: any) => a.role === 'production')
         .map((a: any) => a.staff_members.name);
 
       const discordMessage = {
@@ -215,11 +202,6 @@ export function useDiscordWebhooks(spaceId?: string) {
             {
               name: "📅 Date & Time",
               value: `<t:${Math.floor(streamDate.getTime() / 1000)}:F>\n<t:${Math.floor(streamDate.getTime() / 1000)}:R>`,
-              inline: true
-            },
-            {
-              name: "⏱️ Duration",
-              value: `${Math.round((endDate.getTime() - streamDate.getTime()) / (1000 * 60))} minutes`,
               inline: true
             },
             {
@@ -251,6 +233,14 @@ export function useDiscordWebhooks(spaceId?: string) {
         });
       }
 
+      if (production.length > 0) {
+        discordMessage.embeds[0].fields.push({
+          name: "🎬 Production",
+          value: production.join(', '),
+          inline: true
+        });
+      }
+
       if (streamData.stream_link) {
         discordMessage.embeds[0].fields.push({
           name: "🔗 Stream Link",
@@ -276,7 +266,7 @@ export function useDiscordWebhooks(spaceId?: string) {
       const { data: postData, error: postError } = await supabase
         .from('stream_discord_posts')
         .insert({
-          stream_id: streamId,
+          stream_id: streamData.id,
           webhook_id: webhookId,
           post_type: postType,
           success: true,
@@ -302,7 +292,7 @@ export function useDiscordWebhooks(spaceId?: string) {
       await supabase
         .from('stream_discord_posts')
         .insert({
-          stream_id: streamId,
+          stream_id: streamData.id,
           webhook_id: webhookId,
           post_type: postType,
           success: false,
@@ -314,34 +304,17 @@ export function useDiscordWebhooks(spaceId?: string) {
   };
 
   const editStreamDiscordPost = async (
-    streamId: string,
+    streamData: any,
     webhookId: string,
     discordMessageId: string
   ): Promise<void> => {
     try {
-      // Get stream details
-      const { data: streamData, error: streamError } = await supabase
-        .from('streams')
-        .select(`
-          *,
-          stream_assignments!inner(
-            staff_id,
-            role,
-            staff_members!inner(name)
-          )
-        `)
-        .eq('id', streamId)
-        .single();
-
-      if (streamError) throw streamError;
-
       // Get webhook details
       const webhook = webhooks.find(w => w.id === webhookId);
       if (!webhook) throw new Error('Webhook not found');
 
       // Format stream data for Discord
       const streamDate = new Date(`${streamData.date}T${streamData.start_time}`);
-      const endDate = new Date(`${streamData.date}T${streamData.end_time}`);
       
       const casters = streamData.stream_assignments
         .filter((a: any) => a.role === 'caster')
@@ -364,11 +337,6 @@ export function useDiscordWebhooks(spaceId?: string) {
             {
               name: "📅 Date & Time",
               value: `<t:${Math.floor(streamDate.getTime() / 1000)}:F>\n<t:${Math.floor(streamDate.getTime() / 1000)}:R>`,
-              inline: true
-            },
-            {
-              name: "⏱️ Duration",
-              value: `${Math.round((endDate.getTime() - streamDate.getTime()) / (1000 * 60))} minutes`,
               inline: true
             },
             {
