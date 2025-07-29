@@ -43,8 +43,25 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    // Check if user is already logged out
+    if (!user) {
+      console.warn('User is already logged out');
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error: any) {
+      // Handle AuthSessionMissingError gracefully
+      if (error.name === 'AuthSessionMissingError' || error.message?.includes('Auth session missing')) {
+        console.warn('Auth session was already missing during sign out');
+        // User is effectively logged out, so we don't need to throw
+        return;
+      }
+      // Re-throw other errors
+      throw error;
+    }
   };
 
   return {
