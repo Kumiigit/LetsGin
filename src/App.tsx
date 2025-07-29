@@ -61,6 +61,7 @@ const App: React.FC = () => {
     loading: streamsLoading,
     error: streamsError,
     createStream,
+    updateStream,
     updateRSVP,
     updateStreamStatus,
     deleteStream,
