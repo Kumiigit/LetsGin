@@ -208,7 +208,7 @@ export function useDiscordWebhooks(spaceId?: string) {
               name: "🎯 Status",
               value: streamData.status.charAt(0).toUpperCase() + streamData.status.slice(1),
               inline: true
-            }
+            },
             {
               name: "\u200B",
               value: "\u200B",
@@ -353,7 +353,7 @@ export function useDiscordWebhooks(spaceId?: string) {
               name: "🎯 Status",
               value: streamData.status.charAt(0).toUpperCase() + streamData.status.slice(1),
               inline: true
-            }
+            },
             {
               name: "\u200B",
               value: "\u200B",
