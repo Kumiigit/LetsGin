@@ -221,7 +221,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "🎤 Casters",
           value: casters.join(', '),
-          inline: false
+          inline: true
         });
       }
 
@@ -229,7 +229,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "👀 Observers",
           value: observers.join(', '),
-          inline: false
+          inline: true
         });
       }
 
@@ -237,7 +237,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "🎬 Production",
           value: production.join(', '),
-          inline: false
+          inline: true
         });
       }
 
@@ -361,7 +361,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "🎤 Casters",
           value: casters.join(', '),
-          inline: false
+          inline: true
         });
       }
 
@@ -369,7 +369,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "👀 Observers",
           value: observers.join(', '),
-          inline: false
+          inline: true
         });
       }
 
@@ -377,7 +377,7 @@ export function useDiscordWebhooks(spaceId?: string) {
         discordMessage.embeds[0].fields.push({
           name: "🎬 Production",
           value: production.join(', '),
-          inline: false
+          inline: true
         });
       }
 
