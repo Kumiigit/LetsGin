@@ -210,11 +210,8 @@ const App: React.FC = () => {
   };
 
   const handleProfileUpdate = () => {
-    // Refresh spaces data to update user names
-    if (user?.id) {
-      // Force refresh of spaces data which will reload user profiles
-      window.location.reload();
-    }
+    // Refresh space members to update user names without full page reload
+    refreshSpaceMembers();
   };
 
   const weekDates = getWeekDates(currentWeekStart);

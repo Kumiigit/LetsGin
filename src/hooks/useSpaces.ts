@@ -58,6 +58,39 @@ export function useSpaces(userId?: string) {
     }
   }, [currentSpace, userId]);
 
+  // Set up real-time subscription for user profile changes
+  useEffect(() => {
+    if (!currentSpace || !userId) {
+      return;
+    }
+
+    console.log('Setting up user profiles real-time subscription for space:', currentSpace.id);
+
+    const profilesChannel = supabase
+      .channel(`user_profiles_changes_${currentSpace.id}`)
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'user_profiles' },
+        (payload) => {
+          console.log('User profile change detected:', payload);
+          // Add a small delay to ensure database consistency
+          setTimeout(() => {
+            loadSpaceMembers();
+          }, 100);
+        }
+      )
+      .subscribe();
+
+    // Log subscription status
+    profilesChannel.subscribe((status) => {
+      console.log('User profiles channel subscription status:', status);
+    });
+
+    return () => {
+      console.log('Cleaning up user profiles real-time subscription for space:', currentSpace.id);
+      supabase.removeChannel(profilesChannel);
+    };
+  }, [currentSpace, userId]);
+
   const loadSpaceMembers = async () => {
     if (!currentSpace || !userId) return;
     
