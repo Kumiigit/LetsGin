@@ -250,7 +250,7 @@ export function useDiscordWebhooks(spaceId?: string) {
       }
 
       // Send to Discord
-      const response = await fetch(webhook.webhookUrl, {
+      const response = await fetch(`${webhook.webhookUrl}?wait=true`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
