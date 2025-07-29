@@ -313,6 +313,129 @@ export function useDiscordWebhooks(spaceId?: string) {
     }
   };
 
+  const editStreamDiscordPost = async (
+    streamId: string,
+    webhookId: string,
+    discordMessageId: string
+  ): Promise<void> => {
+    try {
+      // Get stream details
+      const { data: streamData, error: streamError } = await supabase
+        .from('streams')
+        .select(`
+          *,
+          stream_assignments!inner(
+            staff_id,
+            role,
+            staff_members!inner(name)
+          )
+        `)
+        .eq('id', streamId)
+        .single();
+
+      if (streamError) throw streamError;
+
+      // Get webhook details
+      const webhook = webhooks.find(w => w.id === webhookId);
+      if (!webhook) throw new Error('Webhook not found');
+
+      // Format stream data for Discord
+      const streamDate = new Date(`${streamData.date}T${streamData.start_time}`);
+      const endDate = new Date(`${streamData.date}T${streamData.end_time}`);
+      
+      const casters = streamData.stream_assignments
+        .filter((a: any) => a.role === 'caster')
+        .map((a: any) => a.staff_members.name);
+      
+      const observers = streamData.stream_assignments
+        .filter((a: any) => a.role === 'observer')
+        .map((a: any) => a.staff_members.name);
+
+      const production = streamData.stream_assignments
+        .filter((a: any) => a.role === 'production')
+        .map((a: any) => a.staff_members.name);
+
+      const discordMessage = {
+        embeds: [{
+          title: `🎮 ${streamData.title} (Updated)`,
+          description: streamData.description || 'No description provided',
+          color: 0x0099ff, // Blue color for updates
+          fields: [
+            {
+              name: "📅 Date & Time",
+              value: `<t:${Math.floor(streamDate.getTime() / 1000)}:F>\n<t:${Math.floor(streamDate.getTime() / 1000)}:R>`,
+              inline: true
+            },
+            {
+              name: "⏱️ Duration",
+              value: `${Math.round((endDate.getTime() - streamDate.getTime()) / (1000 * 60))} minutes`,
+              inline: true
+            },
+            {
+              name: "🎯 Status",
+              value: streamData.status.charAt(0).toUpperCase() + streamData.status.slice(1),
+              inline: true
+            }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: {
+            text: 'Stream Updated'
+          }
+        }]
+      };
+
+      if (casters.length > 0) {
+        discordMessage.embeds[0].fields.push({
+          name: "🎤 Casters",
+          value: casters.join(', '),
+          inline: true
+        });
+      }
+
+      if (observers.length > 0) {
+        discordMessage.embeds[0].fields.push({
+          name: "👀 Observers",
+          value: observers.join(', '),
+          inline: true
+        });
+      }
+
+      if (production.length > 0) {
+        discordMessage.embeds[0].fields.push({
+          name: "🎬 Production",
+          value: production.join(', '),
+          inline: true
+        });
+      }
+
+      if (streamData.stream_link) {
+        discordMessage.embeds[0].fields.push({
+          name: "🔗 Stream Link",
+          value: `[Join Stream](${streamData.stream_link})`,
+          inline: false
+        });
+      }
+
+      // Update Discord message
+      const response = await fetch(`${webhook.webhookUrl}/messages/${discordMessageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(discordMessage),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Discord API error: ${response.status} ${response.statusText}`);
+      }
+
+      console.log('Discord message updated successfully');
+    } catch (err) {
+      console.error('Failed to update Discord message:', err);
+      throw err;
+    }
+  };
+
   return {
     webhooks,
     loading,
@@ -322,6 +445,7 @@ export function useDiscordWebhooks(spaceId?: string) {
     deleteWebhook,
     testWebhook,
     postStreamToDiscord,
+    editStreamDiscordPost,
     refreshWebhooks: loadWebhooks,
   };
 }

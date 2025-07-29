@@ -143,6 +143,18 @@ export interface StreamDiscordPost {
   createdAt: string;
 }
 
+export interface UpdateStreamPayload {
+  title?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  description?: string;
+  streamLink?: string;
+  casters?: string[];
+  observers?: string[];
+  production?: string[];
+}
+
 export interface SpaceAsset {
   id: string;
   spaceId: string;

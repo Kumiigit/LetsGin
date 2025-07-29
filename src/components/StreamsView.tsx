@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Plus, Calendar, Clock, Users, MessageSquare, Settings } from 'lucide-react';
-import { StreamWithDetails, Staff } from '../types';
+import { StreamWithDetails, Staff, UpdateStreamPayload } from '../types';
 import { StreamCard } from './StreamCard';
 import { CreateStreamForm } from './CreateStreamForm';
+import { EditStreamForm } from './EditStreamForm';
 import { DiscordIntegrationModal } from './DiscordIntegrationModal';
 import { useSpaces } from '../hooks/useSpaces';
 import { useAuth } from '../hooks/useAuth';
@@ -18,7 +19,9 @@ interface StreamsViewProps {
     description?: string;
     casters: string[];
     observers: string[];
+    production: string[];
   }) => void;
+  onUpdateStream: (streamId: string, updateData: UpdateStreamPayload) => void;
   onUpdateRSVP: (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => void;
   onUpdateStreamStatus: (streamId: string, status: 'scheduled' | 'live' | 'completed' | 'cancelled', streamLink?: string) => void;
   onDeleteStream: (streamId: string) => Promise<void>;
@@ -29,12 +32,15 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
   streams,
   staff,
   onCreateStream,
+  onUpdateStream,
   onUpdateRSVP,
   onUpdateStreamStatus,
   onDeleteStream,
   isSpaceAdmin = false,
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingStream, setEditingStream] = useState<StreamWithDetails | null>(null);
   const [showDiscordModal, setShowDiscordModal] = useState(false);
   const { user } = useAuth();
   const { currentSpace } = useSpaces(user?.id);
@@ -54,6 +60,16 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
     .filter(stream => stream.status === 'completed' || stream.status === 'cancelled' || createDateTime(stream.date, stream.endTime) < now)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  const handleEditStream = (stream: StreamWithDetails) => {
+    setEditingStream(stream);
+    setShowEditForm(true);
+  };
+
+  const handleUpdateStream = (streamId: string, updateData: UpdateStreamPayload) => {
+    onUpdateStream(streamId, updateData);
+    setShowEditForm(false);
+    setEditingStream(null);
+  };
   return (
     <div className="space-y-6">
       <div className="professional-card rounded-xl shadow-2xl p-6">
@@ -113,6 +129,17 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
         />
       )}
 
+      {showEditForm && editingStream && isSpaceAdmin && (
+        <EditStreamForm
+          stream={editingStream}
+          staff={staff}
+          onSave={handleUpdateStream}
+          onClose={() => {
+            setShowEditForm(false);
+            setEditingStream(null);
+          }}
+        />
+      )}
       {upcomingStreams.length > 0 && (
         <div className="professional-card rounded-xl shadow-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Upcoming Streams</h3>
@@ -125,6 +152,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
                 onUpdateRSVP={onUpdateRSVP}
                 onUpdateStreamStatus={onUpdateStreamStatus}
                 onDeleteStream={onDeleteStream}
+                onEditStream={handleEditStream}
                 isSpaceAdmin={isSpaceAdmin}
               />
             ))}
@@ -144,6 +172,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
                 onUpdateRSVP={onUpdateRSVP}
                 onUpdateStreamStatus={onUpdateStreamStatus}
                 onDeleteStream={onDeleteStream}
+                onEditStream={handleEditStream}
                 isSpaceAdmin={isSpaceAdmin}
                 isPast={true}
               />

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { StreamWithDetails, Stream, StreamAssignment, StreamRSVP } from '../types';
+import { StreamWithDetails, Stream, StreamAssignment, StreamRSVP, UpdateStreamPayload } from '../types';
 import { useDiscordWebhooks } from './useDiscordWebhooks';
 
 export function useStreamsData(spaceId?: string) {
   const [streams, setStreams] = useState<StreamWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { webhooks, postStreamToDiscord } = useDiscordWebhooks(spaceId);
+  const { webhooks, postStreamToDiscord, editStreamDiscordPost } = useDiscordWebhooks(spaceId);
 
   useEffect(() => {
     if (spaceId) {
@@ -240,6 +240,102 @@ export function useStreamsData(spaceId?: string) {
     }
   };
 
+  const updateStream = async (streamId: string, updateData: UpdateStreamPayload) => {
+    if (!spaceId) throw new Error('No space selected');
+
+    try {
+      console.log('Updating stream:', { streamId, updateData });
+
+      // Update stream basic info
+      const streamUpdateData: any = {};
+      if (updateData.title !== undefined) streamUpdateData.title = updateData.title;
+      if (updateData.date !== undefined) streamUpdateData.date = updateData.date;
+      if (updateData.startTime !== undefined) streamUpdateData.start_time = updateData.startTime;
+      if (updateData.endTime !== undefined) streamUpdateData.end_time = updateData.endTime;
+      if (updateData.description !== undefined) streamUpdateData.description = updateData.description;
+      if (updateData.streamLink !== undefined) streamUpdateData.stream_link = updateData.streamLink;
+
+      if (Object.keys(streamUpdateData).length > 0) {
+        const { error: streamError } = await supabase
+          .from('streams')
+          .update(streamUpdateData)
+          .eq('id', streamId);
+
+        if (streamError) throw streamError;
+      }
+
+      // Update assignments if provided
+      if (updateData.casters !== undefined || updateData.observers !== undefined || updateData.production !== undefined) {
+        // Delete existing assignments
+        const { error: deleteError } = await supabase
+          .from('stream_assignments')
+          .delete()
+          .eq('stream_id', streamId);
+
+        if (deleteError) throw deleteError;
+
+        // Create new assignments
+        const assignments = [
+          ...(updateData.casters || []).map(casterId => ({
+            stream_id: streamId,
+            staff_id: casterId,
+            role: 'caster',
+            is_primary: true,
+          })),
+          ...(updateData.observers || []).map(observerId => ({
+            stream_id: streamId,
+            staff_id: observerId,
+            role: 'observer',
+            is_primary: true,
+          })),
+          ...(updateData.production || []).map(productionId => ({
+            stream_id: streamId,
+            staff_id: productionId,
+            role: 'production',
+            is_primary: true,
+          })),
+        ];
+
+        if (assignments.length > 0) {
+          const { error: assignmentsError } = await supabase
+            .from('stream_assignments')
+            .insert(assignments);
+
+          if (assignmentsError) throw assignmentsError;
+        }
+      }
+
+      // Update Discord messages
+      const { data: discordPosts, error: discordError } = await supabase
+        .from('stream_discord_posts')
+        .select('webhook_id, discord_message_id')
+        .eq('stream_id', streamId)
+        .eq('success', true)
+        .not('discord_message_id', 'is', null);
+
+      if (discordError) {
+        console.error('Failed to fetch Discord posts:', discordError);
+      } else if (discordPosts && discordPosts.length > 0) {
+        for (const post of discordPosts) {
+          if (post.discord_message_id) {
+            try {
+              await editStreamDiscordPost(streamId, post.webhook_id, post.discord_message_id);
+              console.log('Discord message updated successfully');
+            } catch (discordUpdateError) {
+              console.error('Failed to update Discord message:', discordUpdateError);
+              // Don't fail stream update if Discord update fails
+            }
+          }
+        }
+      }
+
+      console.log('Stream updated successfully');
+      await loadStreams();
+    } catch (err) {
+      console.error('Error updating stream:', err);
+      throw err;
+    }
+  };
   const updateRSVP = async (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => {
     try {
       console.log('Updating RSVP:', { streamId, staffId, status, notes });
@@ -364,6 +460,7 @@ export function useStreamsData(spaceId?: string) {
     loading,
     error,
     createStream,
+    updateStream,
     updateRSVP,
     updateStreamStatus,
     deleteStream,

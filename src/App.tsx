@@ -147,6 +147,14 @@ const App: React.FC = () => {
     }
   };
 
+  const handleUpdateStream = async (streamId: string, updateData: UpdateStreamPayload) => {
+    try {
+      await updateStream(streamId, updateData);
+    } catch (error) {
+      console.error('Failed to update stream:', error);
+      throw error;
+    }
+  };
   const handleUpdateStreamStatus = async (
     streamId: string,
     status: 'scheduled' | 'live' | 'completed' | 'cancelled',
@@ -441,6 +449,7 @@ const App: React.FC = () => {
                 streams={streams}
                 staff={staff}
                 onCreateStream={handleCreateStream}
+                onUpdateStream={handleUpdateStream}
                 onUpdateRSVP={updateRSVP}
                 onUpdateStreamStatus={handleUpdateStreamStatus}
                 onDeleteStream={deleteStream}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Users, MessageSquare, Check, X, HelpCircle, ExternalLink, Play, CheckCircle, XCircle, Trash2, Link } from 'lucide-react';
+import { Calendar, Clock, Users, MessageSquare, Check, X, HelpCircle, ExternalLink, Play, CheckCircle, XCircle, Trash2, Link, Edit } from 'lucide-react';
 import { StreamWithDetails, Staff } from '../types';
 import { formatTime } from '../utils/dateUtils';
 
@@ -9,6 +9,7 @@ interface StreamCardProps {
   onUpdateRSVP: (streamId: string, staffId: string, status: 'attending' | 'not_attending' | 'maybe', notes?: string) => void;
   onUpdateStreamStatus: (streamId: string, status: 'scheduled' | 'live' | 'completed' | 'cancelled', streamLink?: string) => void;
   onDeleteStream: (streamId: string) => Promise<void>;
+  onEditStream?: (stream: StreamWithDetails) => void;
   isSpaceAdmin?: boolean;
   isPast?: boolean;
 }
@@ -19,6 +20,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
   onUpdateRSVP,
   onUpdateStreamStatus,
   onDeleteStream,
+  onEditStream,
   isSpaceAdmin = false,
   isPast = false,
 }) => {
@@ -179,6 +181,13 @@ export const StreamCard: React.FC<StreamCardProps> = ({
           </span>
           {!actuallyPast && isSpaceAdmin && (
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => onEditStream?.(stream)}
+                className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                title="Edit Stream"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
               <button
                 onClick={() => handleStreamStatusUpdate('live')}
                 className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
