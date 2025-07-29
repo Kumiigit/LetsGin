@@ -118,7 +118,7 @@ const App: React.FC = () => {
         .insert([{
           id: newUser.user.id,
           email: newUser.user.email,
-          full_name: fullName,
+          full_name: username,
         }]);
 
       if (profileError) {

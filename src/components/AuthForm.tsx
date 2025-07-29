@@ -3,14 +3,14 @@ import { Mail, Lock, User, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 
 interface AuthFormProps {
   onSignIn: (email: string, password: string) => Promise<void>;
-  onSignUp: (email: string, password: string, fullName: string) => Promise<void>;
+  onSignUp: (email: string, password: string, username: string) => Promise<void>;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onSignIn, onSignUp }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,7 +22,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSignIn, onSignUp }) => {
 
     try {
       if (isSignUp) {
-        await onSignUp(email, password, fullName);
+        await onSignUp(email, password, username);
       } else {
         await onSignIn(email, password);
       }
@@ -62,15 +62,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSignIn, onSignUp }) => {
             {isSignUp && (
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Full Name
+                  Username
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username"
                     className="professional-input w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required={isSignUp}
                   />
@@ -148,7 +148,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSignIn, onSignUp }) => {
                 setError('');
                 setEmail('');
                 setPassword('');
-                setFullName('');
+                setUsername('');
               }}
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >
