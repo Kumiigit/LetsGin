@@ -209,6 +209,11 @@ export function useDiscordWebhooks(spaceId?: string) {
               value: streamData.status.charAt(0).toUpperCase() + streamData.status.slice(1),
               inline: true
             }
+            {
+              name: "\u200B",
+              value: "\u200B",
+              inline: false
+            }
           ],
           timestamp: new Date().toISOString(),
           footer: {
@@ -348,6 +353,11 @@ export function useDiscordWebhooks(spaceId?: string) {
               name: "🎯 Status",
               value: streamData.status.charAt(0).toUpperCase() + streamData.status.slice(1),
               inline: true
+            }
+            {
+              name: "\u200B",
+              value: "\u200B",
+              inline: false
             }
           ],
           timestamp: new Date().toISOString(),
