@@ -125,7 +125,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
                 onUpdateRSVP={onUpdateRSVP}
                 onUpdateStreamStatus={onUpdateStreamStatus}
                 onDeleteStream={onDeleteStream}
-                isSpaceOwner={isSpaceOwner}
+                isSpaceAdmin={isSpaceAdmin}
               />
             ))}
           </div>
@@ -144,7 +144,7 @@ export const StreamsView: React.FC<StreamsViewProps> = ({
                 onUpdateRSVP={onUpdateRSVP}
                 onUpdateStreamStatus={onUpdateStreamStatus}
                 onDeleteStream={onDeleteStream}
-                isSpaceOwner={isSpaceOwner}
+                isSpaceAdmin={isSpaceAdmin}
                 isPast={true}
               />
             ))}
