@@ -104,6 +104,12 @@ export function useSpaces(userId?: string) {
 
       setSpaceMembers(transformedMembers);
       console.log('Space members loaded:', transformedMembers.length);
+    // If user is not currently a member and has an approved request, 
+    // treat it as null so they can request to join again
+    if (request.status === 'approved' && !isMember(spaceId)) {
+      return null;
+    }
+    
     } catch (err) {
       console.error('Error loading space members:', err);
       setError(err instanceof Error ? err.message : 'Failed to load space members');
@@ -113,6 +119,9 @@ export function useSpaces(userId?: string) {
     if (!userId) {
       setLoading(false);
       return;
+      
+      // If rejection is older than 7 days, allow new request
+      return null;
     }
     
     try {
