@@ -13,6 +13,7 @@ import { MembersView } from './components/MembersView';
 import { JoinRequestsModal } from './components/JoinRequestsModal';
 import { SpaceSettingsModal } from './components/SpaceSettingsModal';
 import { SpaceBrandingModal } from './components/SpaceBrandingModal';
+import { ProfileModal } from './components/ProfileModal';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { useAuth } from './hooks/useAuth';
@@ -22,7 +23,7 @@ import { useStreamsData } from './hooks/useStreamsData';
 import { useCreditsData } from './hooks/useCreditsData';
 import { getWeekDates } from './utils/dateUtils';
 import { Staff, TimeSlot } from './types';
-import { Settings, Users, ArrowLeft, UserPlus, Image } from 'lucide-react';
+import { Settings, Users, ArrowLeft, UserPlus, Image, User } from 'lucide-react';
 
 const App: React.FC = () => {
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
@@ -92,6 +93,7 @@ const App: React.FC = () => {
   const [showJoinRequestsModal, setShowJoinRequestsModal] = useState(false);
   const [showSpaceSettings, setShowSpaceSettings] = useState(false);
   const [showSpaceBranding, setShowSpaceBranding] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Check if user is admin/owner of current space
@@ -194,6 +196,14 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Failed to remove staff:', error);
       throw error;
+    }
+  };
+
+  const handleProfileUpdate = () => {
+    // Refresh spaces data to update user names
+    if (user?.id) {
+      // Force refresh of spaces data which will reload user profiles
+      window.location.reload();
     }
   };
 
@@ -334,6 +344,14 @@ const App: React.FC = () => {
                   </button>
                 </>
               )}
+              
+              <button
+                onClick={() => setShowProfileModal(true)}
+                className="professional-button flex items-center gap-2 px-3 py-2 rounded-lg transition-colors"
+                title="Edit Profile"
+              >
+                <User className="w-4 h-4" />
+              </button>
               
               <button
                 onClick={signOut}
@@ -484,6 +502,13 @@ const App: React.FC = () => {
         <SpaceBrandingModal
           space={currentSpace}
           onClose={() => setShowSpaceBranding(false)}
+        />
+      )}
+
+      {showProfileModal && (
+        <ProfileModal
+          onClose={() => setShowProfileModal(false)}
+          onProfileUpdate={handleProfileUpdate}
         />
       )}
     </div>
