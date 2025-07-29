@@ -107,7 +107,7 @@ const App: React.FC = () => {
     } else {
       setIsAdmin(false);
     }
-  }, [user, currentSpace]);
+  }, [user, currentSpace, spaceMembers]);
 
   const handleSignUp = async (email: string, password: string, fullName: string) => {
     const { user: newUser, error } = await signUp(email, password);
