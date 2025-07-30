@@ -213,6 +213,13 @@ export const MembersView: React.FC<MembersViewProps> = ({
   };
   const totalMembers = members?.length || 0;
   const totalStaff = staff?.length || 0;
+  
+  // Create a set of member emails to avoid duplicates
+  const memberEmails = new Set(members?.map(member => member.userEmail) || []);
+  
+  // Filter staff to exclude those who are already space members
+  const filteredStaff = staff?.filter(staffMember => !memberEmails.has(staffMember.email)) || [];
+  
   const staffCasters = staff?.filter(s => s?.role === 'caster')?.length || 0;
   const staffObservers = staff?.filter(s => s?.role === 'observer')?.length || 0;
   const staffProduction = staff?.filter(s => s?.role === 'production')?.length || 0;
@@ -378,7 +385,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-green-900/50 backdrop-blur-sm border border-green-700 rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-600">{totalMembers + totalStaff}</div>
+            <div className="text-2xl font-bold text-green-600">{totalMembers + filteredStaff.length}</div>
             <div className="text-sm text-green-300">Total People</div>
           </div>
           <div className="bg-blue-900/50 backdrop-blur-sm border border-blue-700 rounded-lg p-4">
@@ -477,7 +484,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
               ))}
               
               {/* Staff Members */}
-              {staff.map((staffMember) => (
+              {filteredStaff.map((staffMember) => (
                 <tr key={`staff-${staffMember.id}`} className="border-b border-gray-800 hover:bg-gray-900/30">
                   <td className="py-3 px-4">
                     <div>
@@ -529,7 +536,7 @@ export const MembersView: React.FC<MembersViewProps> = ({
             </tbody>
           </table>
           
-          {members.length === 0 && staff.length === 0 && (
+          {members.length === 0 && filteredStaff.length === 0 && (
             <div className="text-center py-8 text-gray-400">
               <Users className="w-12 h-12 mx-auto mb-4 text-gray-500" />
               <p>No members or staff found in this space.</p>
